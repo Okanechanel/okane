@@ -60,6 +60,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
             border: 2px solid #f8bbd9;
+            display: none;
         }
         
         .admin-controls {
@@ -185,6 +186,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: all 0.3s;
+            display: none;
         }
         
         .add-btn:hover {
@@ -338,9 +340,10 @@
         .anime-actions {
             display: flex;
             gap: 8px;
-            margin-top: 15px;
+            margin: 15px 0;
             flex-wrap: wrap;
             flex-shrink: 0;
+            order: -1;
         }
         
         .anime-link {
@@ -417,7 +420,6 @@
             transform: none;
         }
 
-        /* Стили для комментариев */
         .comments-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -568,7 +570,74 @@
             background: #ff5252;
         }
 
-        /* Стили для сайдбара с реквизитами */
+        .edit-comment-btn {
+            position: absolute;
+            top: 8px;
+            right: 35px;
+            background: #4dabf7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .comment-item:hover .edit-comment-btn {
+            opacity: 1;
+        }
+
+        .edit-comment-btn:hover {
+            background: #339af0;
+        }
+
+        .comment-edit-form {
+            margin-top: 10px;
+        }
+
+        .comment-edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #f8bbd9;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .comment-edit-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .save-edit-btn {
+            background: #4dabf7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .cancel-edit-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
         .support-section {
             margin-bottom: 30px;
         }
@@ -645,7 +714,6 @@
             margin-top: 15px;
         }
 
-        /* Стили для профиля пользователя */
         .user-profile {
             margin-bottom: 30px;
         }
@@ -738,6 +806,42 @@
         }
 
         .save-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+        }
+
+        .delete-profile {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .delete-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .admin-access-btn {
+            background: linear-gradient(135deg, #d63384, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .admin-access-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
         }
@@ -957,6 +1061,16 @@
                         <input type="text" id="usernameInput" placeholder="Введите ваш никнейм">
                     </div>
                     <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
+                    
+                    <!-- Кнопка доступа к админ-панели -->
+                    <button class="admin-access-btn" onclick="toggleAdminMode()" id="adminAccessBtn">
+                        🔑 Войти в админ-панель
+                    </button>
+                    
+                    <!-- Кнопка удаления профиля -->
+                    <button class="delete-profile" onclick="deleteUserProfile()">
+                        🗑️ Удалить профиль
+                    </button>
                 </div>
             </div>
 
@@ -987,7 +1101,7 @@
         <!-- Основной контент -->
         <div class="main-content">
             <!-- Панель администратора -->
-            <div class="admin-panel">
+            <div class="admin-panel" id="adminPanel">
                 <div class="admin-controls">
                     <div class="admin-status off" id="adminStatus">
                         🔐 Режим пользователя
@@ -1151,18 +1265,6 @@
                         avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=M",
                         text: "Смотрела на одном дыхании, спасибо за качественный дубляж!",
                         date: "2024-01-16 09:15"
-                    },
-                    {
-                        author: "Дмитрий",
-                        avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=D",
-                        text: "Лучшая озвучка из всех что слышал!",
-                        date: "2024-01-17 18:45"
-                    },
-                    {
-                        author: "Светлана",
-                        avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=S",
-                        text: "Пересматриваю уже в третий раз, не надоедает!",
-                        date: "2024-01-18 11:20"
                     }
                 ]
             },
@@ -1196,6 +1298,66 @@
             avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
         };
 
+        // Функция удаления профиля пользователя
+        function deleteUserProfile() {
+            if (confirm('Вы уверены, что хотите удалить свой профиль? Все ваши данные (комментарии) будут удалены.')) {
+                // Удаляем все комментарии пользователя из всех аниме
+                animeList.forEach(anime => {
+                    if (anime.comments) {
+                        anime.comments = anime.comments.filter(comment => 
+                            comment.author !== currentUser.username
+                        );
+                    }
+                });
+                
+                // Сбрасываем профиль пользователя
+                currentUser = {
+                    username: "Анонимный пользователь",
+                    avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
+                };
+                
+                // Обновляем UI
+                document.getElementById('usernameInput').value = '';
+                document.getElementById('userAvatar').src = currentUser.avatar;
+                
+                // Сохраняем изменения
+                saveToLocalStorage();
+                saveUserToLocalStorage();
+                displayAnimeList(animeList);
+                
+                showNotification('Профиль удален! Все ваши данные очищены.');
+            }
+        }
+
+        // Функция сохранения профиля пользователя
+        function saveUserProfile() {
+            const usernameInput = document.getElementById('usernameInput');
+            const username = usernameInput.value.trim();
+            
+            if (username) {
+                // Если пользователь меняет имя, обновляем все его комментарии
+                const oldUsername = currentUser.username;
+                if (oldUsername !== username && oldUsername !== "Анонимный пользователь") {
+                    animeList.forEach(anime => {
+                        if (anime.comments) {
+                            anime.comments.forEach(comment => {
+                                if (comment.author === oldUsername) {
+                                    comment.author = username;
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                currentUser.username = username;
+            }
+            
+            saveUserToLocalStorage();
+            saveToLocalStorage();
+            displayAnimeList(animeList);
+            showNotification('Профиль сохранен! ✅');
+        }
+
         // Функция для отображения списка
         function displayAnimeList(list) {
             const animeListElement = document.getElementById('animeList');
@@ -1228,7 +1390,7 @@
             }
             
             filteredList.forEach((anime, index) => {
-                const stars = '⭐'.repeat(anime.rating) + '☆'.repeat(5 - anime.rating);
+                const stars = '⭐'.repeat(Math.round(anime.rating)) + '☆'.repeat(5 - Math.round(anime.rating));
                 
                 // Формируем HTML для актеров озвучки
                 let voiceActorsHTML = '';
@@ -1265,8 +1427,19 @@
                                 ${getVoiceTypeText(anime.voiceType)}
                             </span>
                             ${anime.rating > 0 ? `
-                                <span class="rating">${stars}</span>
+                                <span class="rating">${stars} (${anime.rating.toFixed(1)})</span>
                             ` : ''}
+                        </div>
+                        
+                        <!-- КНОПКА "СМОТРЕТЬ" ПЕРЕМЕЩЕНА ВВЕРХ -->
+                        <div class="anime-actions">
+                            <a href="${anime.link}" target="_blank" class="anime-link">🎬 Смотреть</a>
+                            <button class="edit-btn" onclick="editAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
+                                ✏️
+                            </button>
+                            <button class="delete-btn" onclick="deleteAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
+                                🗑️
+                            </button>
                         </div>
                         
                         ${voiceActorsHTML}
@@ -1294,16 +1467,6 @@
                             </div>
                             ${showMoreButton}
                         </div>
-                        
-                        <div class="anime-actions">
-                            <a href="${anime.link}" target="_blank" class="anime-link">🎬 Смотреть</a>
-                            <button class="edit-btn" onclick="editAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
-                                ✏️
-                            </button>
-                            <button class="delete-btn" onclick="deleteAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
-                                🗑️
-                            </button>
-                        </div>
                     </div>
                 `;
                 animeListElement.appendChild(animeItem);
@@ -1318,17 +1481,25 @@
             
             const commentsToShow = limit ? anime.comments.slice(0, limit) : anime.comments;
             
-            return commentsToShow.map((comment, commentIndex) => `
-                <div class="comment-item">
-                    ${isAdmin ? `<button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>` : ''}
-                    <div class="comment-author">
-                        <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
-                        ${comment.author}
+            return commentsToShow.map((comment, commentIndex) => {
+                const isCurrentUserComment = comment.author === currentUser.username;
+                const editDeleteButtons = isCurrentUserComment ? `
+                    <button class="edit-comment-btn" onclick="editComment(${index}, ${commentIndex})">✏️</button>
+                    <button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>
+                ` : (isAdmin ? `<button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>` : '');
+                
+                return `
+                    <div class="comment-item" id="comment-${index}-${commentIndex}">
+                        ${editDeleteButtons}
+                        <div class="comment-author">
+                            <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
+                            ${comment.author}
+                        </div>
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-date">${formatDate(comment.date)}</div>
                     </div>
-                    <div class="comment-text">${comment.text}</div>
-                    <div class="comment-date">${formatDate(comment.date)}</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Функция для форматирования даты
@@ -1372,23 +1543,61 @@
             commentInput.value = '';
         }
 
-        // Функция удаления комментария (для админа)
-        function deleteComment(animeIndex, commentIndex) {
-            if (!isAdmin) return;
+        // Функция редактирования комментария
+        function editComment(animeIndex, commentIndex) {
+            const comment = animeList[animeIndex].comments[commentIndex];
+            const commentElement = document.getElementById(`comment-${animeIndex}-${commentIndex}`);
             
-            if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
-                animeList[animeIndex].comments.splice(commentIndex, 1);
-                saveToLocalStorage();
-                displayAnimeList(animeList);
+            commentElement.innerHTML = `
+                <div class="comment-author">
+                    <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
+                    ${comment.author}
+                </div>
+                <div class="comment-edit-form">
+                    <textarea class="comment-edit-input">${comment.text}</textarea>
+                    <div class="comment-edit-buttons">
+                        <button class="save-edit-btn" onclick="saveCommentEdit(${animeIndex}, ${commentIndex})">Сохранить</button>
+                        <button class="cancel-edit-btn" onclick="displayAnimeList(animeList)">Отмена</button>
+                    </div>
+                </div>
+                <div class="comment-date">${formatDate(comment.date)}</div>
+            `;
+        }
+
+        // Функция сохранения редактирования комментария
+        function saveCommentEdit(animeIndex, commentIndex) {
+            const commentElement = document.getElementById(`comment-${animeIndex}-${commentIndex}`);
+            const editInput = commentElement.querySelector('.comment-edit-input');
+            const newText = editInput.value.trim();
+            
+            if (!newText) {
+                alert('Комментарий не может быть пустым');
+                return;
             }
+            
+            animeList[animeIndex].comments[commentIndex].text = newText;
+            animeList[animeIndex].comments[commentIndex].date = new Date().toISOString().replace('T', ' ').substring(0, 16);
+            
+            saveToLocalStorage();
+            displayAnimeList(animeList);
+        }
+
+        // Функция удаления комментария
+        function deleteComment(animeIndex, commentIndex) {
+            if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                return;
+            }
+            
+            animeList[animeIndex].comments.splice(commentIndex, 1);
+            saveToLocalStorage();
+            displayAnimeList(animeList);
         }
 
         // Функция показа всех комментариев
         function showAllComments(animeIndex) {
             const anime = animeList[animeIndex];
-            const commentsHTML = generateCommentsHTML(anime, animeIndex); // Без лимита
+            const commentsHTML = generateCommentsHTML(anime, animeIndex);
             
-            // Создаем модальное окно для показа всех комментариев
             const modal = document.createElement('div');
             modal.className = 'modal';
             modal.style.display = 'block';
@@ -1408,7 +1617,6 @@
             
             document.body.appendChild(modal);
             
-            // Закрытие при клике вне модального окна
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     modal.remove();
@@ -1426,19 +1634,6 @@
                 displayAnimeList(animeList);
                 document.querySelector('.modal').remove();
             }
-        }
-
-        // Функция сохранения профиля пользователя
-        function saveUserProfile() {
-            const usernameInput = document.getElementById('usernameInput');
-            const username = usernameInput.value.trim();
-            
-            if (username) {
-                currentUser.username = username;
-            }
-            
-            saveUserToLocalStorage();
-            showNotification('Профиль сохранен! ✅');
         }
 
         // Функция загрузки аватара
@@ -1481,10 +1676,6 @@
             }, 2000);
         }
 
-        // Остальной код остается без изменений...
-        // [Здесь должен быть остальной JavaScript код из предыдущего примера]
-        // Функции редактирования, удаления, фильтров, рейтинга, админ-панели и т.д.
-
         // Функция редактирования аниме
         function editAnime(index) {
             if (!isAdmin) return;
@@ -1503,9 +1694,11 @@
             document.getElementById('animeDescription').value = anime.description;
             document.getElementById('animePosterUrl').value = '';
             document.getElementById('animeVoiceActors').value = anime.voiceActors ? anime.voiceActors.join('\n') : '';
-            document.getElementById('animeRating').value = anime.rating || 0;
             
             // Устанавливаем рейтинг
+            document.getElementById('animeRating').value = anime.rating;
+            
+            // Устанавливаем звезды рейтинга
             setRatingStars(anime.rating || 0);
             
             // Показываем текущее изображение в превью
@@ -1621,22 +1814,27 @@
         }
 
         function updateAdminUI() {
+            const adminPanel = document.getElementById('adminPanel');
             const adminStatus = document.getElementById('adminStatus');
             const adminToggle = document.getElementById('adminToggle');
             const logoutBtn = document.getElementById('logoutBtn');
             const addBtn = document.getElementById('addBtn');
             
             if (isAdmin) {
+                adminPanel.style.display = 'block';
                 adminStatus.textContent = '👑 Режим администратора';
                 adminStatus.className = 'admin-status on';
                 adminToggle.style.display = 'none';
                 logoutBtn.style.display = 'block';
+                addBtn.style.display = 'block';
                 addBtn.disabled = false;
             } else {
+                adminPanel.style.display = 'none';
                 adminStatus.textContent = '🔐 Режим пользователя';
                 adminStatus.className = 'admin-status off';
                 adminToggle.style.display = 'block';
                 logoutBtn.style.display = 'none';
+                addBtn.style.display = 'none';
                 addBtn.disabled = true;
             }
         }
@@ -1700,7 +1898,7 @@
             // Определяем, является ли аниме "лучшим" (рейтинг 4+)
             const isBest = rating >= 4;
             
-            // Обрабатываем актеров озвучки
+            // Обрабатываем актеры озвучки
             const voiceActors = voiceActorsText
                 .split('\n')
                 .filter(line => line.trim() !== '')
