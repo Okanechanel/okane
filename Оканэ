@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Озвучка Оканэ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff5f7, #ffeef2);
+            color: #5a2d47;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+        
+        .sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
+            border: 2px solid #f8bbd9;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #d63384;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(214, 51, 132, 0.1);
+            grid-column: 1 / -1;
+        }
+        
+        .admin-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
+            border: 2px solid #f8bbd9;
+        }
+        
+        .admin-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .admin-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .admin-status.off {
+            background: #ffe3e3;
+            color: #fa5252;
+        }
+        
+        .admin-status.on {
+            background: #d3f9d8;
+            color: #2b8a3e;
+        }
+        
+        .admin-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #d63384, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+        }
+        
+        .admin-btn.logout {
+            background: linear-gradient(135deg, #6c757d, #868e96);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #f8bbd9;
+            border-radius: 25px;
+            background: white;
+            color: #5a2d47;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        #searchInput:focus {
+            border-color: #d63384;
+            box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #f8bbd9;
+            border-radius: 20px;
+            background: white;
+            color: #5a2d47;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #d63384;
+            color: white;
+            border-color: #d63384;
+        }
+        
+        .filter-btn:hover {
+            background: #f8bbd9;
+            color: white;
+        }
+        
+        .filter-btn.best {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #8a6d0c;
+            border-color: #ffd700;
+            font-weight: 600;
+        }
+        
+        .filter-btn.best.active {
+            background: linear-gradient(135deg, #ff6b00, #ff8c00);
+            color: white;
+            border-color: #ff6b00;
+        }
+        
+        .add-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #d63384, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+        }
+        
+        .add-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .anime-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .anime-item {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid #ffeef2;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .anime-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(214, 51, 132, 0.15);
+        }
+        
+        .anime-poster-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background: #fff5f7;
+            padding: 0;
+        }
+        
+        .anime-poster {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+        
+        .anime-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .anime-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #d63384;
+            line-height: 1.2;
+        }
+        
+        .anime-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .studio, .voice-type {
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            background: #fff5f7;
+            color: #5a2d47;
+        }
+        
+        .voice-type.dub { background: #e3f2fd; color: #1565c0; }
+        .voice-type.recap { background: #f3e5f5; color: #7b1fa2; }
+        .voice-type.offscreen { background: #e8f5e8; color: #2e7d32; }
+        
+        .rating {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #8a6d0c;
+            font-weight: 600;
+        }
+        
+        .voice-actors {
+            margin: 12px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #d63384;
+            flex-shrink: 0;
+        }
+        
+        .voice-actors-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #d63384;
+            margin-bottom: 8px;
+        }
+        
+        .voice-actor {
+            font-size: 13px;
+            color: #5a2d47;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+        
+        .voice-actor:last-child {
+            margin-bottom: 0;
+        }
+        
+        .description {
+            margin: 0;
+            line-height: 1.6;
+            color: #6b4a5a;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 100px;
+            padding-right: 10px;
+            min-height: 60px;
+        }
+        
+        .description::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .description::-webkit-scrollbar-track {
+            background: #fff5f7;
+            border-radius: 3px;
+        }
+        
+        .description::-webkit-scrollbar-thumb {
+            background: #f8bbd9;
+            border-radius: 3px;
+        }
+        
+        .description::-webkit-scrollbar-thumb:hover {
+            background: #d63384;
+        }
+        
+        .anime-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        
+        .anime-link {
+            color: #d63384;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: #fff5f7;
+            border-radius: 15px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+            flex: 1;
+            font-size: 12px;
+            min-width: 80px;
+        }
+        
+        .anime-link:hover {
+            background: #d63384;
+            color: white;
+            border-color: #d63384;
+        }
+        
+        .edit-btn {
+            background: #4dabf7;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            min-width: 80px;
+            justify-content: center;
+        }
+        
+        .edit-btn:hover {
+            background: #339af0;
+            transform: translateY(-2px);
+        }
+        
+        .edit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            min-width: 80px;
+            justify-content: center;
+        }
+        
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        
+        .delete-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Стили для комментариев */
+        .comments-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f8bbd9;
+        }
+
+        .comments-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #d63384;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comment-form {
+            margin-bottom: 20px;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f8bbd9;
+            border-radius: 15px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .comment-input:focus {
+            border-color: #d63384;
+        }
+
+        .submit-comment {
+            background: linear-gradient(135deg, #d63384, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-comment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+        }
+
+        .comments-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #d63384;
+            position: relative;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #d63384;
+            margin-bottom: 5px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-text {
+            color: #5a2d47;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #868e96;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .no-comments {
+            text-align: center;
+            color: #868e96;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .show-more-comments {
+            background: #f8bbd9;
+            color: #5a2d47;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        .show-more-comments:hover {
+            background: #d63384;
+            color: white;
+        }
+
+        .delete-comment-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .comment-item:hover .delete-comment-btn {
+            opacity: 1;
+        }
+
+        .delete-comment-btn:hover {
+            background: #ff5252;
+        }
+
+        /* Стили для сайдбара с реквизитами */
+        .support-section {
+            margin-bottom: 30px;
+        }
+
+        .support-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #d63384;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .requisites {
+            background: #fff5f7;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #f8bbd9;
+        }
+
+        .requisite-item {
+            margin-bottom: 15px;
+        }
+
+        .requisite-label {
+            font-weight: 600;
+            color: #5a2d47;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .requisite-value {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid #f8bbd9;
+            font-family: monospace;
+            font-size: 16px;
+            color: #d63384;
+            word-break: break-all;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .requisite-value:hover {
+            background: #ffeef2;
+            border-color: #d63384;
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d63384;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+        }
+
+        .copy-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .support-text {
+            text-align: center;
+            color: #6b4a5a;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        /* Стили для профиля пользователя */
+        .user-profile {
+            margin-bottom: 30px;
+        }
+
+        .profile-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #d63384;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .profile-form {
+            background: #fff5f7;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #f8bbd9;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid #d63384;
+        }
+
+        .avatar-upload {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar-input {
+            display: none;
+        }
+
+        .avatar-label {
+            background: #d63384;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .avatar-label:hover {
+            background: #ec4899;
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #5a2d47;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #f8bbd9;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #d63384;
+        }
+
+        .save-profile {
+            background: linear-gradient(135deg, #d63384, #ec4899);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .save-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.3);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #5a2d47;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f8bbd9;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #d63384;
+        }
+        
+        .rating-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .rating-star {
+            font-size: 20px;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+        
+        .rating-star.active {
+            color: #ffd700;
+        }
+        
+        .image-preview {
+            width: 100%;
+            min-height: 200px;
+            border: 2px dashed #f8bbd9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            overflow: hidden;
+            background: #fff5f7;
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #d63384;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8bbd9;
+            color: #5a2d47;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #d63384;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6b4a5a;
+            font-size: 16px;
+        }
+
+        .login-modal {
+            display: none;
+        }
+
+        .login-modal.active {
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .anime-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .anime-actions {
+                flex-direction: column;
+            }
+            
+            .admin-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .anime-link, .edit-btn, .delete-btn {
+                min-width: 100%;
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .anime-item {
+                margin: 0 -10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 Озвучка Оканэ</h1>
+        
+        <!-- Сайдбар с профилем и реквизитами -->
+        <div class="sidebar">
+            <!-- Профиль пользователя -->
+            <div class="user-profile">
+                <h2 class="profile-title">👤 Мой профиль</h2>
+                <div class="profile-form">
+                    <img src="https://via.placeholder.com/80/ffeef2/d63384?text=AV" alt="Аватар" class="profile-avatar" id="userAvatar">
+                    <div class="avatar-upload">
+                        <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
+                        <label for="avatarInput" class="avatar-label">📷 Сменить аватар</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="usernameInput">Никнейм:</label>
+                        <input type="text" id="usernameInput" placeholder="Введите ваш никнейм">
+                    </div>
+                    <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
+                </div>
+            </div>
+
+            <!-- Реквизиты -->
+            <div class="support-section">
+                <h2 class="support-title">💝 Поддержать проект</h2>
+                <div class="requisites">
+                    <div class="requisite-item">
+                        <div class="requisite-label">Банковская карта:</div>
+                        <div class="requisite-value" onclick="copyToClipboard('2202208169526309')">
+                            2202 2081 6952 6309
+                        </div>
+                    </div>
+                    <div class="requisite-item">
+                        <div class="requisite-label">Номер телефона:</div>
+                        <div class="requisite-value" onclick="copyToClipboard('89055662696')">
+                            8 (905) 566-26-96
+                        </div>
+                    </div>
+                </div>
+                <div class="support-text">
+                    Ваша поддержка помогает поддерживать хостинг и развивать проект. 
+                    Спасибо за ваш вклад! 💖
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Панель администратора -->
+            <div class="admin-panel">
+                <div class="admin-controls">
+                    <div class="admin-status off" id="adminStatus">
+                        🔐 Режим пользователя
+                    </div>
+                    <button class="admin-btn" onclick="toggleAdminMode()" id="adminToggle">
+                        🔑 Войти как админ
+                    </button>
+                    <button class="admin-btn logout" onclick="logoutAdmin()" id="logoutBtn" style="display: none;">
+                        🚪 Выйти
+                    </button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Поиск аниме...">
+                </div>
+                <button class="add-btn" onclick="openAddModal()" id="addBtn" disabled>
+                    + Добавить аниме
+                </button>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" onclick="setFilter('all')">Все</button>
+                <button class="filter-btn best" onclick="toggleBestFilter()" id="bestFilter">⭐ Лучшее</button>
+                <button class="filter-btn" onclick="setFilter('dub')">Дубляж</button>
+                <button class="filter-btn" onclick="setFilter('recap')">Рекаст</button>
+                <button class="filter-btn" onclick="setFilter('offscreen')">Закадровая</button>
+            </div>
+            
+            <div class="anime-list" id="animeList">
+                <!-- Список будет добавляться через JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление о копировании -->
+    <div class="copy-notification" id="copyNotification">
+        Реквизиты скопированы! 📋
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div class="modal login-modal" id="loginModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px; color: #d63384;">Вход для администратора</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Пароль администратора</label>
+                    <input type="password" id="adminPassword" required placeholder="Введите пароль">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления/редактирования аниме -->
+    <div class="modal" id="animeModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px; color: #d63384;" id="modalTitle">Добавить аниме</h2>
+            <form id="animeForm">
+                <input type="hidden" id="editIndex" value="-1">
+                
+                <div class="form-group">
+                    <label>Название аниме</label>
+                    <input type="text" id="animeTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Студии (через запятую)</label>
+                    <input type="text" id="animeStudio" required placeholder="Например: Wit Studio, MAPPA">
+                    <small style="color: #868e96; font-size: 12px;">Перечислите студии через запятую</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Тип озвучки</label>
+                    <select id="animeVoiceType" required>
+                        <option value="dub">Дубляж</option>
+                        <option value="recap">Рекаст</option>
+                        <option value="offscreen">Закадровая</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Рейтинг</label>
+                    <div class="rating-input">
+                        <div class="rating-stars" id="ratingStars">
+                            <span class="rating-star" data-rating="1">☆</span>
+                            <span class="rating-star" data-rating="2">☆</span>
+                            <span class="rating-star" data-rating="3">☆</span>
+                            <span class="rating-star" data-rating="4">☆</span>
+                            <span class="rating-star" data-rating="5">☆</span>
+                        </div>
+                        <input type="hidden" id="animeRating" value="0">
+                        <span id="ratingValue">0/5</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Актеры озвучки (каждый с новой строки)</label>
+                    <textarea id="animeVoiceActors" rows="4" placeholder="Имя актера - роль&#10;Например:&#10;Иван Иванов - Эрен Йегер&#10;Мария Петрова - Микаса Аккерман"></textarea>
+                    <small style="color: #868e96; font-size: 12px;">Вводите каждого актера с его ролью на отдельной строке</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ссылка для просмотра</label>
+                    <input type="url" id="animeLink" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Постер аниме (URL или файл)</label>
+                    <input type="text" id="animePosterUrl" placeholder="URL картинки">
+                    <input type="file" id="animePosterFile" accept="image/*" style="margin-top: 10px;">
+                    <div class="image-preview" id="imagePreview">
+                        <span style="color: #f8bbd9;">Превью постера</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="animeDescription" rows="4" placeholder="Подробное описание аниме..."></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary" id="modalSubmit">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Данные аниме
+        let animeList = [
+            {
+                title: "Атака Титанов",
+                studio: "Wit Studio, MAPPA",
+                link: "https://shikimori.one/animes/16498-shingeki-no-kyojin",
+                description: "Эрен Йегер и его друзья сражаются с титанами, чтобы выжить в жестоком мире. История начинается, когда гигантские титаны прорываются через стены, защищающие человечество. Главный герой, Эрен Йегер, клянется уничтожить всех титанов и узнать правду о своем мире.",
+                voiceType: "dub",
+                poster: "https://via.placeholder.com/600x800/ffeef2/d63384?text=Атака+Титанов",
+                voiceActors: [
+                    "Иван Иванов - Эрен Йегер",
+                    "Мария Петрова - Микаса Аккерман",
+                    "Петр Сидоров - Армин Арлерт",
+                    "Анна Козлова - Леви Аккерман"
+                ],
+                rating: 5,
+                isBest: true,
+                comments: [
+                    {
+                        author: "Алексей",
+                        avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=A",
+                        text: "Отличная озвучка! Очень понравилась работа актеров.",
+                        date: "2024-01-15 14:30"
+                    },
+                    {
+                        author: "Мария",
+                        avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=M",
+                        text: "Смотрела на одном дыхании, спасибо за качественный дубляж!",
+                        date: "2024-01-16 09:15"
+                    },
+                    {
+                        author: "Дмитрий",
+                        avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=D",
+                        text: "Лучшая озвучка из всех что слышал!",
+                        date: "2024-01-17 18:45"
+                    },
+                    {
+                        author: "Светлана",
+                        avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=S",
+                        text: "Пересматриваю уже в третий раз, не надоедает!",
+                        date: "2024-01-18 11:20"
+                    }
+                ]
+            },
+            {
+                title: "Ван Пис",
+                studio: "Toei Animation",
+                link: "https://shikimori.one/animes/21-one-piece",
+                description: "Приключения Луффи и его команды пиратов в поисках величайшего сокровища - Ван Пис. Монки Д. Луффи, молодой пират с телом резины после съеденного Дьявольского фрукта, отправляется в захватывающее путешествие через Гранд Лайн, чтобы стать Королем Пиратов.",
+                voiceType: "recap",
+                poster: "https://via.placeholder.com/600x800/ffeef2/d63384?text=Ван+Пис",
+                voiceActors: [
+                    "Сергей Белов - Монки Д. Луффи",
+                    "Ольга Семенова - Нами",
+                    "Дмитрий Новиков - Ророноа Зоро",
+                    "Елена Воронова - Винсмок Санджи"
+                ],
+                rating: 4,
+                isBest: true,
+                comments: []
+            }
+        ];
+
+        // Настройки администратора
+        const ADMIN_PASSWORD = "admin123";
+        let isAdmin = false;
+        let currentFilter = 'all';
+        let currentBestFilter = false;
+        let currentEditIndex = -1;
+        let currentUser = {
+            username: "Анонимный пользователь",
+            avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
+        };
+
+        // Функция для отображения списка
+        function displayAnimeList(list) {
+            const animeListElement = document.getElementById('animeList');
+            animeListElement.innerHTML = '';
+            
+            const filteredList = list.filter(anime => {
+                // Применяем фильтр по типу озвучки
+                let typeMatch = true;
+                if (currentFilter !== 'all') {
+                    typeMatch = anime.voiceType === currentFilter;
+                }
+                
+                // Применяем фильтр "Лучшее"
+                let bestMatch = true;
+                if (currentBestFilter) {
+                    bestMatch = anime.isBest === true;
+                }
+                
+                return typeMatch && bestMatch;
+            });
+            
+            if (filteredList.length === 0) {
+                animeListElement.innerHTML = `
+                    <div class="empty-state">
+                        <h3>😔 Ничего не найдено</h3>
+                        <p>Попробуйте изменить фильтры или добавить новое аниме</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredList.forEach((anime, index) => {
+                const stars = '⭐'.repeat(anime.rating) + '☆'.repeat(5 - anime.rating);
+                
+                // Формируем HTML для актеров озвучки
+                let voiceActorsHTML = '';
+                if (anime.voiceActors && anime.voiceActors.length > 0) {
+                    voiceActorsHTML = `
+                        <div class="voice-actors">
+                            <div class="voice-actors-title">🎭 Актеры озвучки:</div>
+                            ${anime.voiceActors.map(actor => `
+                                <div class="voice-actor">• ${actor}</div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                // Формируем HTML для комментариев (первые 3)
+                const commentsHTML = generateCommentsHTML(anime, index, 3);
+                const showMoreButton = anime.comments && anime.comments.length > 3 ? 
+                    `<button class="show-more-comments" onclick="showAllComments(${index})">
+                        📖 Показать все комментарии (${anime.comments.length})
+                    </button>` : '';
+                
+                const animeItem = document.createElement('div');
+                animeItem.className = 'anime-item';
+                animeItem.innerHTML = `
+                    <div class="anime-poster-container">
+                        <img src="${anime.poster}" alt="${anime.title}" class="anime-poster" 
+                             onerror="this.src='https://via.placeholder.com/600x800/ffeef2/d63384?text=Постер'">
+                    </div>
+                    <div class="anime-content">
+                        <div class="anime-title">${anime.title}</div>
+                        <div class="anime-info">
+                            <span class="studio">${anime.studio}</span>
+                            <span class="voice-type ${anime.voiceType}">
+                                ${getVoiceTypeText(anime.voiceType)}
+                            </span>
+                            ${anime.rating > 0 ? `
+                                <span class="rating">${stars}</span>
+                            ` : ''}
+                        </div>
+                        
+                        ${voiceActorsHTML}
+                        
+                        <div class="description">${anime.description}</div>
+                        
+                        <!-- Секция комментариев -->
+                        <div class="comments-section">
+                            <div class="comments-title">
+                                💬 Комментарии 
+                                <span style="font-size: 14px; color: #868e96;">(${anime.comments ? anime.comments.length : 0})</span>
+                            </div>
+                            
+                            <!-- Форма добавления комментария -->
+                            <div class="comment-form">
+                                <textarea class="comment-input" placeholder="Оставьте ваш комментарий..." id="commentInput-${index}"></textarea>
+                                <button class="submit-comment" onclick="addComment(${index})">
+                                    Отправить комментарий
+                                </button>
+                            </div>
+                            
+                            <!-- Список комментариев -->
+                            <div class="comments-list">
+                                ${commentsHTML}
+                            </div>
+                            ${showMoreButton}
+                        </div>
+                        
+                        <div class="anime-actions">
+                            <a href="${anime.link}" target="_blank" class="anime-link">🎬 Смотреть</a>
+                            <button class="edit-btn" onclick="editAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
+                                ✏️
+                            </button>
+                            <button class="delete-btn" onclick="deleteAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+                animeListElement.appendChild(animeItem);
+            });
+        }
+
+        // Функция для генерации HTML комментариев
+        function generateCommentsHTML(anime, index, limit = null) {
+            if (!anime.comments || anime.comments.length === 0) {
+                return '<div class="no-comments">Пока нет комментариев. Будьте первым!</div>';
+            }
+            
+            const commentsToShow = limit ? anime.comments.slice(0, limit) : anime.comments;
+            
+            return commentsToShow.map((comment, commentIndex) => `
+                <div class="comment-item">
+                    ${isAdmin ? `<button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>` : ''}
+                    <div class="comment-author">
+                        <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
+                        ${comment.author}
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-date">${formatDate(comment.date)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Функция для форматирования даты
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Функция добавления комментария
+        function addComment(animeIndex) {
+            const commentInput = document.getElementById(`commentInput-${animeIndex}`);
+            const commentText = commentInput.value.trim();
+            
+            if (!commentText) {
+                alert('Пожалуйста, введите текст комментария');
+                return;
+            }
+            
+            if (!animeList[animeIndex].comments) {
+                animeList[animeIndex].comments = [];
+            }
+            
+            const newComment = {
+                author: currentUser.username,
+                avatar: currentUser.avatar,
+                text: commentText,
+                date: new Date().toISOString().replace('T', ' ').substring(0, 16)
+            };
+            
+            animeList[animeIndex].comments.unshift(newComment);
+            saveToLocalStorage();
+            displayAnimeList(animeList);
+            
+            // Очищаем поле ввода
+            commentInput.value = '';
+        }
+
+        // Функция удаления комментария (для админа)
+        function deleteComment(animeIndex, commentIndex) {
+            if (!isAdmin) return;
+            
+            if (confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+                animeList[animeIndex].comments.splice(commentIndex, 1);
+                saveToLocalStorage();
+                displayAnimeList(animeList);
+            }
+        }
+
+        // Функция показа всех комментариев
+        function showAllComments(animeIndex) {
+            const anime = animeList[animeIndex];
+            const commentsHTML = generateCommentsHTML(anime, animeIndex); // Без лимита
+            
+            // Создаем модальное окно для показа всех комментариев
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2 style="margin-bottom: 20px; color: #d63384;">💬 Все комментарии к "${anime.title}"</h2>
+                    <div class="comments-list" style="max-height: 400px;">
+                        ${commentsHTML}
+                    </div>
+                    <div class="btn-group" style="margin-top: 20px;">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Закрыть</button>
+                        ${isAdmin && anime.comments && anime.comments.length > 0 ? 
+                            `<button class="btn btn-primary" onclick="clearAllComments(${animeIndex})">🗑️ Очистить все комментарии</button>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Закрытие при клике вне модального окна
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Функция очистки всех комментариев (для админа)
+        function clearAllComments(animeIndex) {
+            if (!isAdmin) return;
+            
+            if (confirm('Вы уверены, что хотите удалить ВСЕ комментарии к этому аниме?')) {
+                animeList[animeIndex].comments = [];
+                saveToLocalStorage();
+                displayAnimeList(animeList);
+                document.querySelector('.modal').remove();
+            }
+        }
+
+        // Функция сохранения профиля пользователя
+        function saveUserProfile() {
+            const usernameInput = document.getElementById('usernameInput');
+            const username = usernameInput.value.trim();
+            
+            if (username) {
+                currentUser.username = username;
+            }
+            
+            saveUserToLocalStorage();
+            showNotification('Профиль сохранен! ✅');
+        }
+
+        // Функция загрузки аватара
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUser.avatar = e.target.result;
+                    document.getElementById('userAvatar').src = e.target.result;
+                    saveUserToLocalStorage();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Функция копирования реквизитов
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text.replace(/\s/g, '')).then(() => {
+                showCopyNotification();
+            });
+        }
+
+        // Функция показа уведомления о копировании
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Функция показа обычного уведомления
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Остальной код остается без изменений...
+        // [Здесь должен быть остальной JavaScript код из предыдущего примера]
+        // Функции редактирования, удаления, фильтров, рейтинга, админ-панели и т.д.
+
+        // Функция редактирования аниме
+        function editAnime(index) {
+            if (!isAdmin) return;
+            
+            const anime = animeList[index];
+            currentEditIndex = index;
+            
+            document.getElementById('modalTitle').textContent = 'Редактировать аниме';
+            document.getElementById('modalSubmit').textContent = 'Сохранить';
+            document.getElementById('editIndex').value = index;
+            
+            document.getElementById('animeTitle').value = anime.title;
+            document.getElementById('animeStudio').value = anime.studio;
+            document.getElementById('animeVoiceType').value = anime.voiceType;
+            document.getElementById('animeLink').value = anime.link;
+            document.getElementById('animeDescription').value = anime.description;
+            document.getElementById('animePosterUrl').value = '';
+            document.getElementById('animeVoiceActors').value = anime.voiceActors ? anime.voiceActors.join('\n') : '';
+            document.getElementById('animeRating').value = anime.rating || 0;
+            
+            // Устанавливаем рейтинг
+            setRatingStars(anime.rating || 0);
+            
+            // Показываем текущее изображение в превью
+            document.getElementById('imagePreview').innerHTML = `<img src="${anime.poster}" alt="Превью">`;
+            
+            openModal();
+        }
+
+        // Функция удаления аниме
+        function deleteAnime(index) {
+            if (!isAdmin) return;
+            
+            if (confirm('Вы уверены, что хотите удалить это аниме?')) {
+                animeList.splice(index, 1);
+                saveToLocalStorage();
+                displayAnimeList(animeList);
+            }
+        }
+
+        // Функция для получения текста типа озвучки
+        function getVoiceTypeText(type) {
+            const types = {
+                'dub': 'Дубляж',
+                'recap': 'Рекаст',
+                'offscreen': 'Закадровая'
+            };
+            return types[type] || type;
+        }
+
+        // Функции для фильтров
+        function setFilter(filter) {
+            currentFilter = filter;
+            updateFilterButtons();
+            displayAnimeList(animeList);
+        }
+
+        function toggleBestFilter() {
+            currentBestFilter = !currentBestFilter;
+            updateFilterButtons();
+            displayAnimeList(animeList);
+        }
+
+        function updateFilterButtons() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Активируем кнопку фильтра по типу
+            if (currentFilter !== 'all') {
+                document.querySelector(`.filter-btn[onclick="setFilter('${currentFilter}')"]`).classList.add('active');
+            } else {
+                document.querySelector('.filter-btn[onclick="setFilter(\'all\')"]').classList.add('active');
+            }
+            
+            // Активируем кнопку "Лучшее" если она активна
+            if (currentBestFilter) {
+                document.getElementById('bestFilter').classList.add('active');
+            }
+        }
+
+        // Функции для рейтинга
+        function setupRatingStars() {
+            const stars = document.querySelectorAll('.rating-star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    setRatingStars(rating);
+                });
+                
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(rating);
+                });
+            });
+            
+            document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+                const currentRating = parseInt(document.getElementById('animeRating').value);
+                highlightStars(currentRating);
+            });
+        }
+
+        function setRatingStars(rating) {
+            document.getElementById('animeRating').value = rating;
+            document.getElementById('ratingValue').textContent = `${rating}/5`;
+            highlightStars(rating);
+        }
+
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.rating-star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                    star.textContent = '⭐';
+                } else {
+                    star.classList.remove('active');
+                    star.textContent = '☆';
+                }
+            });
+        }
+
+        // Функции админ-панели
+        function toggleAdminMode() {
+            if (!isAdmin) {
+                document.getElementById('loginModal').classList.add('active');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            updateAdminUI();
+            displayAnimeList(animeList);
+        }
+
+        function updateAdminUI() {
+            const adminStatus = document.getElementById('adminStatus');
+            const adminToggle = document.getElementById('adminToggle');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const addBtn = document.getElementById('addBtn');
+            
+            if (isAdmin) {
+                adminStatus.textContent = '👑 Режим администратора';
+                adminStatus.className = 'admin-status on';
+                adminToggle.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                addBtn.disabled = false;
+            } else {
+                adminStatus.textContent = '🔐 Режим пользователя';
+                adminStatus.className = 'admin-status off';
+                adminToggle.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                addBtn.disabled = true;
+            }
+        }
+
+        // Функции для модальных окон
+        function openModal() {
+            document.getElementById('animeModal').style.display = 'block';
+        }
+
+        function openAddModal() {
+            if (!isAdmin) return;
+            
+            document.getElementById('modalTitle').textContent = 'Добавить аниме';
+            document.getElementById('modalSubmit').textContent = 'Добавить';
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('animeForm').reset();
+            document.getElementById('imagePreview').innerHTML = '<span style="color: #f8bbd9;">Превью постера</span>';
+            setRatingStars(0);
+            openModal();
+        }
+
+        function closeModal() {
+            document.getElementById('animeModal').style.display = 'none';
+            currentEditIndex = -1;
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('loginForm').reset();
+        }
+
+        // Обработка формы входа
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                updateAdminUI();
+                displayAnimeList(animeList);
+                closeLoginModal();
+            } else {
+                alert('Неверный пароль!');
+            }
+        });
+
+        // Обработка формы аниме
+        document.getElementById('animeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            
+            const title = document.getElementById('animeTitle').value;
+            const studio = document.getElementById('animeStudio').value;
+            const voiceType = document.getElementById('animeVoiceType').value;
+            const link = document.getElementById('animeLink').value;
+            const description = document.getElementById('animeDescription').value;
+            const voiceActorsText = document.getElementById('animeVoiceActors').value;
+            const rating = parseInt(document.getElementById('animeRating').value);
+            const editIndex = document.getElementById('editIndex').value;
+            
+            // Определяем, является ли аниме "лучшим" (рейтинг 4+)
+            const isBest = rating >= 4;
+            
+            // Обрабатываем актеров озвучки
+            const voiceActors = voiceActorsText
+                .split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => line.trim());
+            
+            // Получаем постер из URL или файла
+            const posterUrl = document.getElementById('animePosterUrl').value;
+            const posterFile = document.getElementById('animePosterFile').files[0];
+            
+            let poster = posterUrl;
+            
+            if (posterFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    poster = e.target.result;
+                    saveAnime(title, studio, voiceType, link, description, voiceActors, poster, rating, isBest, editIndex);
+                };
+                reader.readAsDataURL(posterFile);
+            } else {
+                // Если URL не указан и это редактирование, сохраняем старый постер
+                if (!poster && editIndex !== '-1') {
+                    poster = animeList[editIndex].poster;
+                }
+                saveAnime(title, studio, voiceType, link, description, voiceActors, poster, rating, isBest, editIndex);
+            }
+        });
+
+        function saveAnime(title, studio, voiceType, link, description, voiceActors, poster, rating, isBest, editIndex) {
+            // Если нет постера, используем заглушку
+            if (!poster) {
+                poster = `https://via.placeholder.com/600x800/ffeef2/d63384?text=${encodeURIComponent(title)}`;
+            }
+            
+            const animeData = {
+                title,
+                studio,
+                voiceType,
+                link,
+                description,
+                poster,
+                voiceActors,
+                rating,
+                isBest,
+                comments: editIndex !== '-1' ? animeList[editIndex].comments || [] : []
+            };
+            
+            if (editIndex === '-1') {
+                // Добавление нового аниме
+                animeList.push(animeData);
+            } else {
+                // Редактирование существующего аниме
+                animeList[editIndex] = animeData;
+            }
+            
+            saveToLocalStorage();
+            displayAnimeList(animeList);
+            closeModal();
+        }
+
+        // Превью изображения
+        document.getElementById('animePosterFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').innerHTML = `<img src="${e.target.result}" alt="Превью">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('animePosterUrl').addEventListener('input', function(e) {
+            const url = e.target.value;
+            if (url) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${url}" alt="Превью" onerror="this.parentElement.innerHTML='<span style=\\'color: #f8bbd9;\\'>Ошибка загрузки</span>'">`;
+            }
+        });
+
+        // Поиск
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredList = animeList.filter(anime => 
+                anime.title.toLowerCase().includes(searchTerm) ||
+                anime.studio.toLowerCase().includes(searchTerm) ||
+                anime.description.toLowerCase().includes(searchTerm) ||
+                (anime.voiceActors && anime.voiceActors.some(actor => 
+                    actor.toLowerCase().includes(searchTerm)
+                )) ||
+                (anime.comments && anime.comments.some(comment =>
+                    comment.text.toLowerCase().includes(searchTerm) ||
+                    comment.author.toLowerCase().includes(searchTerm)
+                ))
+            );
+            displayAnimeList(filteredList);
+        });
+
+        // Local Storage функции
+        function saveToLocalStorage() {
+            localStorage.setItem('animeList', JSON.stringify(animeList));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('animeList');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return null;
+        }
+
+        function saveUserToLocalStorage() {
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+
+        function loadUserFromLocalStorage() {
+            const saved = localStorage.getItem('currentUser');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return null;
+        }
+
+        // Загрузка данных при старте
+        const savedData = loadFromLocalStorage();
+        if (savedData) {
+            animeList = savedData;
+        }
+
+        const savedUser = loadUserFromLocalStorage();
+        if (savedUser) {
+            currentUser = savedUser;
+            document.getElementById('usernameInput').value = currentUser.username;
+            document.getElementById('userAvatar').src = currentUser.avatar;
+        }
+
+        // Первоначальная загрузка
+        setupRatingStars();
+        updateAdminUI();
+        displayAnimeList(animeList);
+        updateFilterButtons();
+
+        // Закрытие модальных окон при клике вне их
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('animeModal')) {
+                closeModal();
+            }
+            if (e.target === document.getElementById('loginModal')) {
+                closeLoginModal();
+            }
+        });
+    </script>
+</body>
+</html>
