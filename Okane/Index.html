@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Озвучка Оканэ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 Озвучка Оканэ</h1>
+        
+        <!-- Сайдбар с профилем и реквизитами -->
+        <div class="sidebar">
+            <!-- Профиль пользователя -->
+            <div class="user-profile">
+                <h2 class="profile-title">👤 Мой профиль</h2>
+                <div class="profile-form">
+                    <img src="https://via.placeholder.com/80/ffeef2/d63384?text=AV" alt="Аватар" class="profile-avatar" id="userAvatar">
+                    <div class="avatar-upload">
+                        <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
+                        <label for="avatarInput" class="avatar-label">📷 Сменить аватар</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="usernameInput">Никнейм:</label>
+                        <input type="text" id="usernameInput" placeholder="Введите ваш никнейм">
+                    </div>
+                    <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
+                    
+                    <!-- Кнопка доступа к админ-панели -->
+                    <button class="admin-access-btn" onclick="toggleAdminMode()" id="adminAccessBtn">
+                        🔑 Войти в админ-панель
+                    </button>
+                    
+                    <!-- Кнопка удаления профиля -->
+                    <button class="delete-profile" onclick="deleteUserProfile()">
+                        🗑️ Удалить профиль
+                    </button>
+                </div>
+            </div>
+
+            <!-- Реквизиты -->
+            <div class="support-section">
+                <h2 class="support-title">💝 Поддержать проект</h2>
+                <div class="requisites">
+                    <div class="requisite-item">
+                        <div class="requisite-label">Банковская карта:</div>
+                        <div class="requisite-value" onclick="copyToClipboard('2202208169526309')">
+                            2202 2081 6952 6309
+                        </div>
+                    </div>
+                    <div class="requisite-item">
+                        <div class="requisite-label">Номер телефона:</div>
+                        <div class="requisite-value" onclick="copyToClipboard('89055662696')">
+                            8 (905) 566-26-96
+                        </div>
+                    </div>
+                </div>
+                <div class="support-text">
+                    Ваша поддержка помогает поддерживать хостинг и развивать проект. 
+                    Спасибо за ваш вклад! 💖
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Панель администратора -->
+            <div class="admin-panel" id="adminPanel">
+                <div class="admin-controls">
+                    <div class="admin-status off" id="adminStatus">
+                        🔐 Режим пользователя
+                    </div>
+                    <button class="admin-btn" onclick="toggleAdminMode()" id="adminToggle">
+                        🔑 Войти как админ
+                    </button>
+                    <button class="admin-btn logout" onclick="logoutAdmin()" id="logoutBtn" style="display: none;">
+                        🚪 Выйти
+                    </button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Поиск аниме...">
+                </div>
+                <button class="add-btn" onclick="openAddModal()" id="addBtn" disabled>
+                    + Добавить аниме
+                </button>
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" onclick="setFilter('all')">Все</button>
+                <button class="filter-btn best" onclick="toggleBestFilter()" id="bestFilter">⭐ Лучшее</button>
+                <button class="filter-btn" onclick="setFilter('dub')">Дубляж</button>
+                <button class="filter-btn" onclick="setFilter('recap')">Рекаст</button>
+                <button class="filter-btn" onclick="setFilter('offscreen')">Закадровая</button>
+                <button class="filter-btn year" onclick="setYearFilter('newest')" id="newestFilter">📅 Сначала новые</button>
+                <button class="filter-btn year" onclick="setYearFilter('oldest')" id="oldestFilter">📅 Сначала старые</button>
+            </div>
+            
+            <div class="anime-list" id="animeList">
+                <!-- Список будет добавляться через JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление о копировании -->
+    <div class="copy-notification" id="copyNotification">
+        Реквизиты скопированы! 📋
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div class="modal login-modal" id="loginModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px; color: #d63384;">Вход для администратора</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Пароль администратора</label>
+                    <input type="password" id="adminPassword" required placeholder="Введите пароль">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления/редактирования аниме -->
+    <div class="modal" id="animeModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px; color: #d63384;" id="modalTitle">Добавить аниме</h2>
+            <form id="animeForm">
+                <input type="hidden" id="editIndex" value="-1">
+                
+                <div class="form-group">
+                    <label>Название аниме</label>
+                    <input type="text" id="animeTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Студии (через запятую)</label>
+                    <input type="text" id="animeStudio" required placeholder="Например: Wit Studio, MAPPA">
+                    <small style="color: #868e96; font-size: 11px;">Перечислите студии через запятую</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Тип озвучки</label>
+                    <select id="animeVoiceType" required>
+                        <option value="dub">Дубляж</option>
+                        <option value="recap">Рекаст</option>
+                        <option value="offscreen">Закадровая</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Год озвучки</label>
+                    <input type="number" id="animeVoiceYear" min="1990" max="2030" value="2024" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Рейтинг</label>
+                    <div class="rating-input">
+                        <div class="rating-stars" id="ratingStars">
+                            <span class="rating-star" data-rating="1">☆</span>
+                            <span class="rating-star" data-rating="2">☆</span>
+                            <span class="rating-star" data-rating="3">☆</span>
+                            <span class="rating-star" data-rating="4">☆</span>
+                            <span class="rating-star" data-rating="5">☆</span>
+                        </div>
+                        <input type="hidden" id="animeRating" value="0">
+                        <span id="ratingValue">0/5</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Актеры озвучки (каждый с новой строки)</label>
+                    <textarea id="animeVoiceActors" rows="3" placeholder="Имя актера - роль&#10;Например:&#10;Иван Иванов - Эрен Йегер&#10;Мария Петрова - Микаса Аккерман"></textarea>
+                    <small style="color: #868e96; font-size: 11px;">Вводите каждого актера с его ролью на отдельной строке</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Постер аниме (URL или файл)</label>
+                    <input type="text" id="animePosterUrl" placeholder="URL картинки">
+                    <input type="file" id="animePosterFile" accept="image/*" style="margin-top: 8px;">
+                    <div class="image-preview" id="imagePreview">
+                        <span style="color: #f8bbd9;">Превью постера</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="animeDescription" rows="3" placeholder="Подробное описание аниме..."></textarea>
+                </div>
+                
+                <!-- Редактор сезонов -->
+                <div class="seasons-editor">
+                    <div class="seasons-header">
+                        <div class="seasons-title">📺 Сезоны аниме</div>
+                        <button type="button" class="add-season-btn" onclick="addSeason()">+ Добавить сезон</button>
+                    </div>
+                    <div class="seasons-list" id="seasonsList">
+                        <!-- Сезоны будут добавляться динамически -->
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary" id="modalSubmit">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
