@@ -13,12 +13,7 @@ let animeList = [
             "Петр Сидоров - Армин Арлерт",
             "Анна Козлова - Леви Аккерман"
         ],
-        rating: 4.8,
-        userRatings: [
-            { userId: "user1", rating: 5 },
-            { userId: "user2", rating: 4 },
-            { userId: "user3", rating: 5 }
-        ],
+        rating: 5,
         isBest: true,
         seasons: [
             {
@@ -30,18 +25,16 @@ let animeList = [
                 name: "Сезон 2",
                 episodes: 12,
                 link: "https://shikimori.one/animes/16498-shingeki-no-kyojin/season2"
-            }
-        ],
-        specials: [
-            {
-                name: "OVA: Ilse's Notebook",
-                episodes: 1,
-                link: "https://shikimori.one/animes/10408"
             },
             {
-                name: "OVA: A Choice with No Regrets",
-                episodes: 2,
-                link: "https://shikimori.one/animes/20954"
+                name: "Сезон 3",
+                episodes: 22,
+                link: "https://shikimori.one/animes/16498-shingeki-no-kyojin/season3"
+            },
+            {
+                name: "Финальный сезон",
+                episodes: 28,
+                link: "https://shikimori.one/animes/16498-shingeki-no-kyojin/final"
             }
         ],
         comments: [
@@ -50,6 +43,12 @@ let animeList = [
                 avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=A",
                 text: "Отличная озвучка! Очень понравилась работа актеров.",
                 date: "2024-01-15 14:30"
+            },
+            {
+                author: "Мария",
+                avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=M",
+                text: "Смотрела на одном дыхании, спасибо за качественный дубляж!",
+                date: "2024-01-16 09:15"
             }
         ]
     },
@@ -66,11 +65,7 @@ let animeList = [
             "Дмитрий Новиков - Ророноа Зоро",
             "Елена Воронова - Винсмок Санджи"
         ],
-        rating: 4.5,
-        userRatings: [
-            { userId: "user1", rating: 5 },
-            { userId: "user2", rating: 4 }
-        ],
+        rating: 4,
         isBest: true,
         seasons: [
             {
@@ -79,11 +74,64 @@ let animeList = [
                 link: "https://shikimori.one/animes/21-one-piece/season1"
             }
         ],
-        specials: [
+        comments: []
+    },
+    {
+        title: "Наруто",
+        studio: "Studio Pierrot",
+        description: "История о юном ниндзя Наруто Узумаки, который мечтает стать Хокаге - лидером своей деревни. Несмотря на то, что в нем запечатан Девятихвостый демон-лис, Наруто не сдается и продолжает упорно тренироваться, чтобы достичь своей цели.",
+        voiceType: "dub",
+        voiceYear: 2018,
+        poster: "https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Наруто",
+        voiceActors: [
+            "Александр Новиков - Наруто Узумаки",
+            "Екатерина Семенова - Сакура Харуно",
+            "Михаил Петров - Саске Учиха",
+            "Ольга Иванова - Какаши Хатаке"
+        ],
+        rating: 4,
+        isBest: false,
+        seasons: [
             {
-                name: "OVA: Defeat Him! The Pirate Ganzack!",
+                name: "Классический Наруто",
+                episodes: 220,
+                link: "https://shikimori.one/animes/20-naruto/classic"
+            },
+            {
+                name: "Наруто: Ураганные хроники",
+                episodes: 500,
+                link: "https://shikimori.one/animes/20-naruto/shippuden"
+            }
+        ],
+        comments: [
+            {
+                author: "Дмитрий",
+                avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=D",
+                text: "Классика жанра! Отличная озвучка, рекомендую всем фанатам аниме.",
+                date: "2024-01-10 18:45"
+            }
+        ]
+    },
+    {
+        title: "Ходячий замок",
+        studio: "Studio Ghibli",
+        description: "История о юной шляпнице Софи, которая попадает под действие проклятия и превращается в старуху. В поисках спасения она знакомится с загадочным волшебником Хаулом и его передвигающимся замком.",
+        voiceType: "offscreen",
+        voiceYear: 2020,
+        poster: "https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Ходячий+замок",
+        voiceActors: [
+            "Анна Соколова - Софи",
+            "Игорь Петров - Хаул",
+            "Мария Козлова - Кальцифер",
+            "Сергей Новиков - Маркл"
+        ],
+        rating: 5,
+        isBest: true,
+        seasons: [
+            {
+                name: "Полная версия",
                 episodes: 1,
-                link: "https://shikimori.one/animes/1931"
+                link: "https://shikimori.one/animes/430-howl-no-ugoku-shiro"
             }
         ],
         comments: []
@@ -97,199 +145,102 @@ let currentFilter = 'all';
 let currentBestFilter = false;
 let currentYearFilter = 'none';
 let currentEditIndex = -1;
+let currentUser = {
+    username: "Анонимный пользователь",
+    avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
+};
 
-// Система пользователей
-let users = [];
-let currentUser = null;
-let isLoggedIn = false;
+// Дебаунс для поиска
+let searchTimeout;
 
-// Фоны
-const backgrounds = [
-    { name: "Розовый градиент", value: "linear-gradient(135deg, #fff5f7, #ffeef2)" },
-    { name: "Фиолетовый", value: "linear-gradient(135deg, #667eea, #764ba2)" },
-    { name: "Оранжевый", value: "linear-gradient(135deg, #f093fb, #f5576c)" },
-    { name: "Синий", value: "linear-gradient(135deg, #4facfe, #00f2fe)" },
-    { name: "Зеленый", value: "linear-gradient(135deg, #43e97b, #38f9d7)" },
-    { name: "Темный", value: "linear-gradient(135deg, #2c3e50, #3498db)" }
-];
-
-// Инициализация
-function init() {
-    loadFromLocalStorage();
-    loadUsersFromLocalStorage();
-    loadCurrentUserFromLocalStorage();
-    setupEventListeners();
-    setupRatingStars();
-    updateUI();
-    displayAnimeList(animeList);
-    updateFilterButtons();
-    setupBackgrounds();
-}
-
-// Система пользователей
-function switchAuthTab(tab) {
-    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.auth-content').forEach(c => c.classList.remove('active'));
-    
-    document.querySelector(`.auth-tab[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
-    document.getElementById(`${tab}Content`).classList.add('active');
-}
-
-function handleRegister() {
-    const username = document.getElementById('registerUsername').value.trim();
-    const password = document.getElementById('registerPassword').value.trim();
-    
-    if (!username || !password) {
-        showNotification("Заполните все поля");
-        return;
-    }
-    
-    const result = registerUser(username, password);
-    showNotification(result.message);
-    
-    if (result.success) {
-        document.getElementById('registerUsername').value = '';
-        document.getElementById('registerPassword').value = '';
-        switchAuthTab('login');
-    }
-}
-
-function handleLogin() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    
-    if (!username || !password) {
-        showNotification("Заполните все поля");
-        return;
-    }
-    
-    const result = loginUser(username, password);
-    showNotification(result.message);
-    
-    if (result.success) {
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
-        updateUI();
-    }
-}
-
-function registerUser(username, password) {
-    if (users.find(user => user.username === username)) {
-        return { success: false, message: "Пользователь уже существует" };
-    }
-    
-    const newUser = {
-        id: generateId(),
-        username: username,
-        password: password,
-        avatar: `https://via.placeholder.com/80/ffeef2/d63384?text=${username.charAt(0).toUpperCase()}`,
-        joinDate: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    saveUsersToLocalStorage();
-    return { success: true, message: "Регистрация успешна!" };
-}
-
-function loginUser(username, password) {
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-        currentUser = user;
-        isLoggedIn = true;
-        saveCurrentUserToLocalStorage();
-        return { success: true, message: "Вход выполнен!" };
-    }
-    return { success: false, message: "Неверный логин или пароль" };
-}
-
-function logoutUser() {
-    currentUser = null;
-    isLoggedIn = false;
-    saveCurrentUserToLocalStorage();
-    updateUI();
-    showNotification("Вы вышли из системы");
-}
-
-// Система оценок
-function rateAnime(animeIndex, rating) {
-    if (!isLoggedIn) {
-        showNotification("Войдите в систему, чтобы оценивать аниме");
-        return;
-    }
-    
-    const anime = animeList[animeIndex];
-    if (!anime.userRatings) {
-        anime.userRatings = [];
-    }
-    
-    const existingRatingIndex = anime.userRatings.findIndex(r => r.userId === currentUser.id);
-    
-    if (existingRatingIndex !== -1) {
-        anime.userRatings[existingRatingIndex].rating = rating;
-    } else {
-        anime.userRatings.push({
-            userId: currentUser.id,
-            rating: rating
+// Функция удаления профиля пользователя
+function deleteUserProfile() {
+    if (confirm('Вы уверены, что хотите удалить свой профиль? Все ваши данные (комментарии) будут удалены.')) {
+        // Удаляем все комментарии пользователя из всех аниме
+        animeList.forEach(anime => {
+            if (anime.comments) {
+                anime.comments = anime.comments.filter(comment => 
+                    comment.author !== currentUser.username
+                );
+            }
         });
+        
+        // Сбрасываем профиль пользователя
+        currentUser = {
+            username: "Анонимный пользователь",
+            avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
+        };
+        
+        // Обновляем UI
+        document.getElementById('usernameInput').value = '';
+        document.getElementById('userAvatar').src = currentUser.avatar;
+        
+        // Сохраняем изменения
+        saveToLocalStorage();
+        saveUserToLocalStorage();
+        displayAnimeList(animeList);
+        
+        showNotification('Профиль удален! Все ваши данные очищены.');
+    }
+}
+
+// Функция сохранения профиля пользователя
+function saveUserProfile() {
+    const usernameInput = document.getElementById('usernameInput');
+    const username = usernameInput.value.trim();
+    
+    if (username) {
+        // Если пользователь меняет имя, обновляем все его комментарии
+        const oldUsername = currentUser.username;
+        if (oldUsername !== username && oldUsername !== "Анонимный пользователь") {
+            animeList.forEach(anime => {
+                if (anime.comments) {
+                    anime.comments.forEach(comment => {
+                        if (comment.author === oldUsername) {
+                            comment.author = username;
+                        }
+                    });
+                }
+            });
+        }
+        
+        currentUser.username = username;
     }
     
-    // Пересчитываем средний рейтинг
-    const totalRating = anime.userRatings.reduce((sum, r) => sum + r.rating, 0);
-    anime.rating = totalRating / anime.userRatings.length;
-    
+    saveUserToLocalStorage();
     saveToLocalStorage();
     displayAnimeList(animeList);
-    showNotification(`Вы оценили "${anime.title}" на ${rating}⭐`);
+    showNotification('Профиль сохранен! ✅');
 }
 
-function getUserRating(animeIndex) {
-    if (!isLoggedIn || !animeList[animeIndex].userRatings) return 0;
-    const userRating = animeList[animeIndex].userRatings.find(r => r.userId === currentUser.id);
-    return userRating ? userRating.rating : 0;
-}
-
-// OVA/ONA/Спешлы
-function generateSpecialsHTML(anime, index) {
-    if (!anime.specials || anime.specials.length === 0) return '';
-    
-    const specialsList = anime.specials.map(special => `
-        <div class="special-item" onclick="window.open('${special.link}', '_blank')">
-            <span class="special-name">${special.name}</span>
-            <span class="special-episodes">(${special.episodes} эп.)</span>
-        </div>
-    `).join('');
-    
-    return `
-        <div class="toggle-specials" onclick="toggleSpecials(this)">
-            📺 Спешлы/OVA (${anime.specials.length})
-        </div>
-        <div class="specials-section">
-            <div class="specials-title">🎬 Дополнительные эпизоды</div>
-            ${specialsList}
-        </div>
-    `;
-}
-
-function toggleSpecials(element) {
-    const animeItem = element.closest('.anime-item');
-    const specialsSection = animeItem.querySelector('.specials-section');
-    const isVisible = specialsSection.style.display !== 'none';
-    
-    if (isVisible) {
-        specialsSection.style.display = 'none';
-        element.textContent = `📺 Спешлы/OVA (${animeItem.querySelectorAll('.special-item').length})`;
-    } else {
-        specialsSection.style.display = 'block';
-        element.textContent = '📺 Скрыть спешлы';
-    }
-}
-
-// Обновленная функция отображения списка аниме
+// Функция для отображения списка
 function displayAnimeList(list) {
     const animeListElement = document.getElementById('animeList');
     animeListElement.innerHTML = '';
     
-    const filteredList = filterAnimeList(list);
+    // Применяем сортировку по году
+    let sortedList = [...list];
+    if (currentYearFilter === 'newest') {
+        sortedList.sort((a, b) => b.voiceYear - a.voiceYear);
+    } else if (currentYearFilter === 'oldest') {
+        sortedList.sort((a, b) => a.voiceYear - b.voiceYear);
+    }
+    
+    const filteredList = sortedList.filter(anime => {
+        // Применяем фильтр по типу озвучки
+        let typeMatch = true;
+        if (currentFilter !== 'all') {
+            typeMatch = anime.voiceType === currentFilter;
+        }
+        
+        // Применяем фильтр "Лучшее"
+        let bestMatch = true;
+        if (currentBestFilter) {
+            bestMatch = anime.isBest === true;
+        }
+        
+        return typeMatch && bestMatch;
+    });
     
     if (filteredList.length === 0) {
         animeListElement.innerHTML = `
@@ -303,180 +254,96 @@ function displayAnimeList(list) {
     
     filteredList.forEach((anime, index) => {
         const stars = '⭐'.repeat(Math.round(anime.rating)) + '☆'.repeat(5 - Math.round(anime.rating));
-        const userRating = getUserRating(index);
+        
+        // Формируем HTML для актеров озвучки
+        let voiceActorsHTML = '';
+        if (anime.voiceActors && anime.voiceActors.length > 0) {
+            voiceActorsHTML = `
+                <div class="voice-actors">
+                    <div class="voice-actors-title">🎭 Актеры озвучки:</div>
+                    ${anime.voiceActors.map(actor => `
+                        <div class="voice-actor">• ${actor}</div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Формируем HTML для комментариев (первые 2)
+        const commentsHTML = generateCommentsHTML(anime, index, 2);
+        const showMoreButton = anime.comments && anime.comments.length > 2 ? 
+            `<button class="show-more-comments" onclick="showAllComments(${index})">
+                📖 Показать все комментарии (${anime.comments.length})
+            </button>` : '';
+        
+        // Формируем HTML для сезонов
+        const seasonsHTML = generateSeasonsHTML(anime, index);
         
         const animeItem = document.createElement('div');
         animeItem.className = 'anime-item';
-        animeItem.innerHTML = generateAnimeItemHTML(anime, index, stars, userRating);
+        animeItem.innerHTML = `
+            <div class="anime-poster-container">
+                <img src="${anime.poster}" alt="${anime.title}" class="anime-poster" 
+                     onerror="this.src='https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Постер+не+найден'">
+                <div class="anime-actions">
+                    ${seasonsHTML}
+                    <button class="edit-btn" onclick="editAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
+                        ✏️ Редактировать
+                    </button>
+                    <button class="delete-btn" onclick="deleteAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
+                        🗑️ Удалить
+                    </button>
+                </div>
+            </div>
+            <div class="anime-content">
+                <div class="anime-title">${anime.title}</div>
+                <div class="anime-info">
+                    <span class="studio">${anime.studio}</span>
+                    <span class="voice-type ${anime.voiceType}">
+                        ${getVoiceTypeText(anime.voiceType)}
+                    </span>
+                    <span class="voice-year">${anime.voiceYear} год</span>
+                    ${anime.rating > 0 ? `
+                        <span class="rating">${stars} (${anime.rating.toFixed(1)})</span>
+                    ` : ''}
+                </div>
+                
+                <div class="description">${anime.description}</div>
+                
+                <!-- Кнопка для отображения дополнительной информации -->
+                <div class="toggle-details" onclick="toggleDetails(this)">
+                    📋 Показать детали
+                </div>
+                
+                <!-- Секция с актерами и комментариями (скрыта по умолчанию) -->
+                <div class="details-section">
+                    ${voiceActorsHTML}
+                    
+                    <!-- Секция комментариев -->
+                    <div class="comments-section">
+                        <div class="comments-title" onclick="toggleComments(this)">
+                            💬 Комментарии 
+                            <span style="font-size: 12px; color: #868e96;">(${anime.comments ? anime.comments.length : 0})</span>
+                        </div>
+                        
+                        <!-- Форма добавления комментария -->
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Оставьте ваш комментарий..." id="commentInput-${index}"></textarea>
+                            <button class="submit-comment" onclick="addComment(${index})">
+                                Отправить комментарий
+                            </button>
+                        </div>
+                        
+                        <!-- Список комментариев -->
+                        <div class="comments-list">
+                            ${commentsHTML}
+                        </div>
+                        ${showMoreButton}
+                    </div>
+                </div>
+            </div>
+        `;
         animeListElement.appendChild(animeItem);
     });
-}
-
-function generateAnimeItemHTML(anime, index, stars, userRating) {
-    const voiceActorsHTML = anime.voiceActors && anime.voiceActors.length > 0 ? `
-        <div class="voice-actors">
-            <div class="voice-actors-title">🎭 Актеры озвучки:</div>
-            ${anime.voiceActors.map(actor => `
-                <div class="voice-actor">• ${actor}</div>
-            `).join('')}
-        </div>
-    ` : '';
-
-    const commentsHTML = generateCommentsHTML(anime, index, 2);
-    const showMoreButton = anime.comments && anime.comments.length > 2 ? 
-        `<button class="show-more-comments" onclick="showAllComments(${index})">
-            📖 Показать все комментарии (${anime.comments.length})
-        </button>` : '';
-
-    return `
-        <div class="anime-poster-container">
-            <img src="${anime.poster}" alt="${anime.title}" class="anime-poster" 
-                 onerror="this.src='https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Постер'">
-            <div class="anime-actions">
-                ${generateSeasonsHTML(anime, index)}
-                <button class="edit-btn" onclick="editAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
-                    ✏️ Редактировать
-                </button>
-                <button class="delete-btn" onclick="deleteAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
-                    🗑️ Удалить
-                </button>
-            </div>
-        </div>
-        <div class="anime-content">
-            <div class="anime-title">${anime.title}</div>
-            <div class="anime-info">
-                <span class="studio">${anime.studio}</span>
-                <span class="voice-type ${anime.voiceType}">
-                    ${getVoiceTypeText(anime.voiceType)}
-                </span>
-                <span class="voice-year">${anime.voiceYear} год</span>
-                ${anime.rating > 0 ? `
-                    <span class="rating">${stars} (${anime.rating.toFixed(1)})</span>
-                ` : ''}
-            </div>
-            
-            <!-- Система оценок -->
-            <div class="rating-system">
-                <div class="rating-title">Ваша оценка</div>
-                <div class="user-rating">
-                    <div class="user-rating-stars">
-                        ${[1,2,3,4,5].map(star => `
-                            <span class="user-rating-star ${star <= userRating ? 'active' : ''}" 
-                                  onclick="rateAnime(${index}, ${star})">
-                                ${star <= userRating ? '⭐' : '☆'}
-                            </span>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="rating-stats">
-                    <span class="rating-average">Средняя: ${anime.rating.toFixed(1)}</span>
-                    <span class="rating-count">Оценок: ${anime.userRatings ? anime.userRatings.length : 0}</span>
-                </div>
-            </div>
-            
-            <div class="description">${anime.description}</div>
-            
-            ${generateSpecialsHTML(anime, index)}
-            
-            <div class="toggle-details" onclick="toggleDetails(this)">
-                📋 Показать детали
-            </div>
-            
-            <div class="details-section">
-                ${voiceActorsHTML}
-                
-                <!-- Секция комментариев -->
-                <div class="comments-section">
-                    <div class="comments-title" onclick="toggleComments(this)">
-                        💬 Комментарии 
-                        <span style="font-size: 12px; color: #868e96;">(${anime.comments ? anime.comments.length : 0})</span>
-                    </div>
-                    
-                    <!-- Форма добавления комментария -->
-                    <div class="comment-form">
-                        <textarea class="comment-input" placeholder="Оставьте ваш комментарий..." id="commentInput-${index}"></textarea>
-                        <button class="submit-comment" onclick="addComment(${index})">
-                            Отправить комментарий
-                        </button>
-                    </div>
-                    
-                    <!-- Список комментариев -->
-                    <div class="comments-list">
-                        ${commentsHTML}
-                    </div>
-                    ${showMoreButton}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Фоны
-function setupBackgrounds() {
-    const container = document.getElementById('backgroundOptions');
-    backgrounds.forEach((bg, index) => {
-        const option = document.createElement('div');
-        option.className = 'background-option';
-        option.style.background = bg.value;
-        option.onclick = () => changeBackground(bg.value);
-        container.appendChild(option);
-    });
-}
-
-function changeBackground(background) {
-    document.body.style.background = background;
-    localStorage.setItem('userBackground', background);
-    showNotification("Фон изменен!");
-}
-
-// Вспомогательные функции
-function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-function filterAnimeList(list) {
-    let filtered = [...list];
-    
-    if (currentFilter !== 'all') {
-        filtered = filtered.filter(anime => anime.voiceType === currentFilter);
-    }
-    
-    if (currentBestFilter) {
-        filtered = filtered.filter(anime => anime.isBest === true);
-    }
-    
-    if (currentYearFilter === 'newest') {
-        filtered.sort((a, b) => b.voiceYear - a.voiceYear);
-    } else if (currentYearFilter === 'oldest') {
-        filtered.sort((a, b) => a.voiceYear - b.voiceYear);
-    }
-    
-    return filtered;
-}
-
-function updateUI() {
-    updateAdminUI();
-    updateUserUI();
-    updateAuthUI();
-}
-
-function updateUserUI() {
-    document.body.classList.toggle('user-mode', !isAdmin);
-}
-
-function updateAuthUI() {
-    const authSection = document.getElementById('userAuthSection');
-    const profileSection = document.getElementById('userProfile');
-    
-    if (isLoggedIn && currentUser) {
-        authSection.style.display = 'none';
-        profileSection.style.display = 'block';
-        document.getElementById('profileUsername').textContent = `👤 ${currentUser.username}`;
-        document.getElementById('userAvatar').src = currentUser.avatar;
-    } else {
-        authSection.style.display = 'block';
-        profileSection.style.display = 'none';
-    }
 }
 
 // Функция для генерации HTML сезонов
@@ -500,7 +367,7 @@ function generateSeasonsHTML(anime, index) {
         return `
             <div class="seasons-dropdown">
                 <div class="watch-btn" onclick="toggleSeasonsMenu(this)">
-                    🎬 Смотреть (${anime.seasons.length} ${getSeasonWord(anime.seasons.length)})
+                    🎬 Смотреть (${anime.seasons.length} сезонов)
                 </div>
                 <div class="seasons-menu">
                     ${seasonsList}
@@ -508,12 +375,6 @@ function generateSeasonsHTML(anime, index) {
             </div>
         `;
     }
-}
-
-function getSeasonWord(count) {
-    if (count % 10 === 1 && count % 100 !== 11) return 'сезон';
-    if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) return 'сезона';
-    return 'сезонов';
 }
 
 // Функция для переключения меню сезонов
@@ -536,6 +397,91 @@ function toggleSeasonsMenu(element) {
     }
 }
 
+// Закрытие меню сезонов при клике вне его
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.seasons-dropdown')) {
+        document.querySelectorAll('.seasons-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Функции для редактора сезонов
+function addSeason(seasonData = null) {
+    const seasonsList = document.getElementById('seasonsList');
+    const seasonIndex = seasonsList.children.length;
+    
+    const seasonEditor = document.createElement('div');
+    seasonEditor.className = 'season-editor-item';
+    seasonEditor.innerHTML = `
+        <div class="season-editor-header">
+            <div class="season-number">Сезон ${seasonIndex + 1}</div>
+            <button type="button" class="remove-season-btn" onclick="removeSeason(this)">×</button>
+        </div>
+        <div class="season-fields">
+            <div class="season-field">
+                <label>Название сезона</label>
+                <input type="text" class="season-name" value="${seasonData ? seasonData.name : `Сезон ${seasonIndex + 1}`}" placeholder="Например: Сезон 1">
+            </div>
+            <div class="season-field">
+                <label>Количество эпизодов</label>
+                <input type="number" class="season-episodes" value="${seasonData ? seasonData.episodes : 12}" min="1" max="1000">
+            </div>
+            <div class="season-field full-width">
+                <label>Ссылка для просмотра</label>
+                <input type="url" class="season-link" value="${seasonData ? seasonData.link : ''}" placeholder="https://example.com/season1">
+            </div>
+        </div>
+    `;
+    
+    seasonsList.appendChild(seasonEditor);
+}
+
+function removeSeason(button) {
+    const seasonEditor = button.closest('.season-editor-item');
+    seasonEditor.remove();
+    
+    // Обновляем номера сезонов
+    const seasonsList = document.getElementById('seasonsList');
+    Array.from(seasonsList.children).forEach((editor, index) => {
+        editor.querySelector('.season-number').textContent = `Сезон ${index + 1}`;
+    });
+}
+
+function getSeasonsData() {
+    const seasonsList = document.getElementById('seasonsList');
+    const seasons = [];
+    
+    Array.from(seasonsList.children).forEach(editor => {
+        const name = editor.querySelector('.season-name').value;
+        const episodes = parseInt(editor.querySelector('.season-episodes').value);
+        const link = editor.querySelector('.season-link').value;
+        
+        if (name && link) {
+            seasons.push({
+                name,
+                episodes,
+                link
+            });
+        }
+    });
+    
+    return seasons;
+}
+
+function loadSeasonsData(seasons) {
+    const seasonsList = document.getElementById('seasonsList');
+    seasonsList.innerHTML = '';
+    
+    if (seasons && seasons.length > 0) {
+        seasons.forEach(season => {
+            addSeason(season);
+        });
+    } else {
+        addSeason(); // Добавляем один сезон по умолчанию
+    }
+}
+
 // Функция для переключения отображения деталей
 function toggleDetails(element) {
     const animeItem = element.closest('.anime-item');
@@ -545,9 +491,6 @@ function toggleDetails(element) {
     if (isExpanded) {
         animeItem.classList.remove('expanded');
         element.textContent = '📋 Показать детали';
-        detailsSection.querySelectorAll('.voice-actors, .comments-section').forEach(el => {
-            el.style.display = 'none';
-        });
     } else {
         animeItem.classList.add('expanded');
         element.textContent = '📋 Скрыть детали';
@@ -583,7 +526,7 @@ function generateCommentsHTML(anime, index, limit = null) {
     const commentsToShow = limit ? anime.comments.slice(0, limit) : anime.comments;
     
     return commentsToShow.map((comment, commentIndex) => {
-        const isCurrentUserComment = comment.author === (currentUser ? currentUser.username : '');
+        const isCurrentUserComment = comment.author === currentUser.username;
         const editDeleteButtons = isCurrentUserComment ? `
             <button class="edit-comment-btn" onclick="editComment(${index}, ${commentIndex})">✏️</button>
             <button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>
@@ -617,11 +560,6 @@ function formatDate(dateString) {
 
 // Функция добавления комментария
 function addComment(animeIndex) {
-    if (!isLoggedIn) {
-        showNotification("Войдите в систему, чтобы оставлять комментарии");
-        return;
-    }
-    
     const commentInput = document.getElementById(`commentInput-${animeIndex}`);
     const commentText = commentInput.value.trim();
     
@@ -750,8 +688,7 @@ document.getElementById('avatarInput').addEventListener('change', function(e) {
         reader.onload = function(e) {
             currentUser.avatar = e.target.result;
             document.getElementById('userAvatar').src = e.target.result;
-            saveCurrentUserToLocalStorage();
-            showNotification("Аватар обновлен!");
+            saveUserToLocalStorage();
         };
         reader.readAsDataURL(file);
     }
@@ -767,7 +704,6 @@ function copyToClipboard(text) {
 // Функция показа уведомления о копировании
 function showCopyNotification() {
     const notification = document.getElementById('copyNotification');
-    notification.textContent = 'Реквизиты скопированы! 📋';
     notification.classList.add('show');
     setTimeout(() => {
         notification.classList.remove('show');
@@ -781,7 +717,7 @@ function showNotification(message) {
     notification.classList.add('show');
     setTimeout(() => {
         notification.classList.remove('show');
-    }, 3000);
+    }, 2000);
 }
 
 // Функция редактирования аниме
@@ -814,9 +750,6 @@ function editAnime(index) {
     
     // Загружаем сезоны
     loadSeasonsData(anime.seasons);
-    
-    // Загружаем спешлы
-    loadSpecialsData(anime.specials);
     
     openModal();
 }
@@ -936,7 +869,6 @@ function logoutAdmin() {
     isAdmin = false;
     updateAdminUI();
     displayAnimeList(animeList);
-    showNotification("Режим администратора выключен");
 }
 
 function updateAdminUI() {
@@ -982,7 +914,6 @@ function openAddModal() {
     
     // Сбрасываем сезоны (добавляем один по умолчанию)
     loadSeasonsData([]);
-    loadSpecialsData([]);
     
     openModal();
 }
@@ -1007,7 +938,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         updateAdminUI();
         displayAnimeList(animeList);
         closeLoginModal();
-        showNotification("Режим администратора включен! 👑");
+        showNotification('Успешный вход в админ-панель! 👑');
     } else {
         alert('Неверный пароль!');
     }
@@ -1026,6 +957,14 @@ document.getElementById('animeForm').addEventListener('submit', function(e) {
     const voiceActorsText = document.getElementById('animeVoiceActors').value;
     const rating = parseInt(document.getElementById('animeRating').value);
     const editIndex = document.getElementById('editIndex').value;
+    
+    // Валидация данных
+    try {
+        validateAnimeData({ title, studio, voiceYear });
+    } catch (error) {
+        alert(error.message);
+        return;
+    }
     
     // Определяем, является ли аниме "лучшим" (рейтинг 4+)
     const isBest = rating >= 4;
@@ -1058,10 +997,23 @@ document.getElementById('animeForm').addEventListener('submit', function(e) {
     }
 });
 
+// Функция валидации данных аниме
+function validateAnimeData(data) {
+    if (!data.title || data.title.length < 1) {
+        throw new Error('Название аниме обязательно');
+    }
+    if (!data.studio || data.studio.length < 1) {
+        throw new Error('Студия обязательна');
+    }
+    if (data.voiceYear < 1990 || data.voiceYear > new Date().getFullYear() + 1) {
+        throw new Error('Некорректный год озвучки');
+    }
+    return true;
+}
+
 function saveAnime(title, studio, voiceType, voiceYear, description, voiceActors, poster, rating, isBest, editIndex) {
     // Получаем данные сезонов
     const seasons = getSeasonsData();
-    const specials = getSpecialsData();
     
     // Если нет постера, используем заглушку
     if (!poster) {
@@ -1077,176 +1029,24 @@ function saveAnime(title, studio, voiceType, voiceYear, description, voiceActors
         poster,
         voiceActors,
         rating,
-        userRatings: editIndex !== '-1' ? animeList[editIndex].userRatings || [] : [],
         isBest,
         seasons,
-        specials,
         comments: editIndex !== '-1' ? animeList[editIndex].comments || [] : []
     };
     
     if (editIndex === '-1') {
         // Добавление нового аниме
         animeList.push(animeData);
-        showNotification(`Аниме "${title}" добавлено!`);
+        showNotification('Аниме успешно добавлено! ✅');
     } else {
         // Редактирование существующего аниме
         animeList[editIndex] = animeData;
-        showNotification(`Аниме "${title}" обновлено!`);
+        showNotification('Аниме успешно обновлено! ✏️');
     }
     
     saveToLocalStorage();
     displayAnimeList(animeList);
     closeModal();
-}
-
-// Функции для редактора сезонов
-function addSeason(seasonData = null) {
-    const seasonsList = document.getElementById('seasonsList');
-    const seasonIndex = seasonsList.children.length;
-    
-    const seasonEditor = document.createElement('div');
-    seasonEditor.className = 'season-editor-item';
-    seasonEditor.innerHTML = `
-        <div class="season-editor-header">
-            <div class="season-number">Сезон ${seasonIndex + 1}</div>
-            <button type="button" class="remove-season-btn" onclick="removeSeason(this)">×</button>
-        </div>
-        <div class="season-fields">
-            <div class="season-field">
-                <label>Название сезона</label>
-                <input type="text" class="season-name" value="${seasonData ? seasonData.name : `Сезон ${seasonIndex + 1}`}" placeholder="Например: Сезон 1">
-            </div>
-            <div class="season-field">
-                <label>Количество эпизодов</label>
-                <input type="number" class="season-episodes" value="${seasonData ? seasonData.episodes : 12}" min="1" max="1000">
-            </div>
-            <div class="season-field full-width">
-                <label>Ссылка для просмотра</label>
-                <input type="url" class="season-link" value="${seasonData ? seasonData.link : ''}" placeholder="https://example.com/season1">
-            </div>
-        </div>
-    `;
-    
-    seasonsList.appendChild(seasonEditor);
-}
-
-function removeSeason(button) {
-    const seasonEditor = button.closest('.season-editor-item');
-    seasonEditor.remove();
-    
-    // Обновляем номера сезонов
-    const seasonsList = document.getElementById('seasonsList');
-    Array.from(seasonsList.children).forEach((editor, index) => {
-        editor.querySelector('.season-number').textContent = `Сезон ${index + 1}`;
-    });
-}
-
-function getSeasonsData() {
-    const seasonsList = document.getElementById('seasonsList');
-    const seasons = [];
-    
-    Array.from(seasonsList.children).forEach(editor => {
-        const name = editor.querySelector('.season-name').value;
-        const episodes = parseInt(editor.querySelector('.season-episodes').value);
-        const link = editor.querySelector('.season-link').value;
-        
-        if (name && link) {
-            seasons.push({
-                name,
-                episodes,
-                link
-            });
-        }
-    });
-    
-    return seasons;
-}
-
-function loadSeasonsData(seasons) {
-    const seasonsList = document.getElementById('seasonsList');
-    seasonsList.innerHTML = '';
-    
-    if (seasons && seasons.length > 0) {
-        seasons.forEach(season => {
-            addSeason(season);
-        });
-    } else {
-        addSeason(); // Добавляем один сезон по умолчанию
-    }
-}
-
-// Функции для редактора спешлов
-function addSpecial(specialData = null) {
-    const specialsList = document.getElementById('specialsList');
-    const specialIndex = specialsList.children.length;
-    
-    const specialEditor = document.createElement('div');
-    specialEditor.className = 'season-editor-item';
-    specialEditor.innerHTML = `
-        <div class="season-editor-header">
-            <div class="season-number">Спешл ${specialIndex + 1}</div>
-            <button type="button" class="remove-season-btn" onclick="removeSpecial(this)">×</button>
-        </div>
-        <div class="season-fields">
-            <div class="season-field">
-                <label>Название спешла</label>
-                <input type="text" class="special-name" value="${specialData ? specialData.name : `OVA ${specialIndex + 1}`}" placeholder="Например: OVA 1">
-            </div>
-            <div class="season-field">
-                <label>Количество эпизодов</label>
-                <input type="number" class="special-episodes" value="${specialData ? specialData.episodes : 1}" min="1" max="100">
-            </div>
-            <div class="season-field full-width">
-                <label>Ссылка для просмотра</label>
-                <input type="url" class="special-link" value="${specialData ? specialData.link : ''}" placeholder="https://example.com/ova1">
-            </div>
-        </div>
-    `;
-    
-    specialsList.appendChild(specialEditor);
-}
-
-function removeSpecial(button) {
-    const specialEditor = button.closest('.season-editor-item');
-    specialEditor.remove();
-    
-    // Обновляем номера спешлов
-    const specialsList = document.getElementById('specialsList');
-    Array.from(specialsList.children).forEach((editor, index) => {
-        editor.querySelector('.season-number').textContent = `Спешл ${index + 1}`;
-    });
-}
-
-function getSpecialsData() {
-    const specialsList = document.getElementById('specialsList');
-    const specials = [];
-    
-    Array.from(specialsList.children).forEach(editor => {
-        const name = editor.querySelector('.special-name').value;
-        const episodes = parseInt(editor.querySelector('.special-episodes').value);
-        const link = editor.querySelector('.special-link').value;
-        
-        if (name && link) {
-            specials.push({
-                name,
-                episodes,
-                link
-            });
-        }
-    });
-    
-    return specials;
-}
-
-function loadSpecialsData(specials) {
-    const specialsList = document.getElementById('specialsList');
-    specialsList.innerHTML = '';
-    
-    if (specials && specials.length > 0) {
-        specials.forEach(special => {
-            addSpecial(special);
-        });
-    }
 }
 
 // Превью изображения
@@ -1268,22 +1068,25 @@ document.getElementById('animePosterUrl').addEventListener('input', function(e) 
     }
 });
 
-// Поиск
+// Поиск с дебаунсом
 document.getElementById('searchInput').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredList = animeList.filter(anime => 
-        anime.title.toLowerCase().includes(searchTerm) ||
-        anime.studio.toLowerCase().includes(searchTerm) ||
-        anime.description.toLowerCase().includes(searchTerm) ||
-        (anime.voiceActors && anime.voiceActors.some(actor => 
-            actor.toLowerCase().includes(searchTerm)
-        )) ||
-        (anime.comments && anime.comments.some(comment =>
-            comment.text.toLowerCase().includes(searchTerm) ||
-            comment.author.toLowerCase().includes(searchTerm)
-        ))
-    );
-    displayAnimeList(filteredList);
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredList = animeList.filter(anime => 
+            anime.title.toLowerCase().includes(searchTerm) ||
+            anime.studio.toLowerCase().includes(searchTerm) ||
+            anime.description.toLowerCase().includes(searchTerm) ||
+            (anime.voiceActors && anime.voiceActors.some(actor => 
+                actor.toLowerCase().includes(searchTerm)
+            )) ||
+            (anime.comments && anime.comments.some(comment =>
+                comment.text.toLowerCase().includes(searchTerm) ||
+                comment.author.toLowerCase().includes(searchTerm)
+            ))
+        );
+        displayAnimeList(filteredList);
+    }, 300);
 });
 
 // Local Storage функции
@@ -1294,62 +1097,53 @@ function saveToLocalStorage() {
 function loadFromLocalStorage() {
     const saved = localStorage.getItem('animeList');
     if (saved) {
-        animeList = JSON.parse(saved);
+        return JSON.parse(saved);
     }
-    
-    const savedBackground = localStorage.getItem('userBackground');
-    if (savedBackground) {
-        document.body.style.background = savedBackground;
-    }
+    return null;
 }
 
-function saveUsersToLocalStorage() {
-    localStorage.setItem('users', JSON.stringify(users));
-}
-
-function loadUsersFromLocalStorage() {
-    const saved = localStorage.getItem('users');
-    if (saved) {
-        users = JSON.parse(saved);
-    }
-}
-
-function saveCurrentUserToLocalStorage() {
+function saveUserToLocalStorage() {
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    localStorage.setItem('isLoggedIn', isLoggedIn.toString());
 }
 
-function loadCurrentUserFromLocalStorage() {
-    const savedUser = localStorage.getItem('currentUser');
-    const savedLogin = localStorage.getItem('isLoggedIn');
-    
-    if (savedUser && savedLogin === 'true') {
-        currentUser = JSON.parse(savedUser);
-        isLoggedIn = true;
+function loadUserFromLocalStorage() {
+    const saved = localStorage.getItem('currentUser');
+    if (saved) {
+        return JSON.parse(saved);
     }
+    return null;
 }
 
-// Настройка event listeners
-function setupEventListeners() {
-    // Закрытие модальных окон при клике вне их
-    window.addEventListener('click', function(e) {
-        if (e.target === document.getElementById('animeModal')) {
-            closeModal();
-        }
-        if (e.target === document.getElementById('loginModal')) {
-            closeLoginModal();
-        }
-    });
-    
-    // Закрытие меню сезонов при клике вне его
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.seasons-dropdown')) {
-            document.querySelectorAll('.seasons-menu.show').forEach(menu => {
-                menu.classList.remove('show');
-            });
-        }
-    });
+// Загрузка данных при старте
+const savedData = loadFromLocalStorage();
+if (savedData) {
+    animeList = savedData;
 }
 
-// Инициализация при загрузке
-document.addEventListener('DOMContentLoaded', init);
+const savedUser = loadUserFromLocalStorage();
+if (savedUser) {
+    currentUser = savedUser;
+    document.getElementById('usernameInput').value = currentUser.username;
+    document.getElementById('userAvatar').src = currentUser.avatar;
+}
+
+// Первоначальная загрузка
+setupRatingStars();
+updateAdminUI();
+displayAnimeList(animeList);
+updateFilterButtons();
+
+// Закрытие модальных окон при клике вне их
+window.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('animeModal')) {
+        closeModal();
+    }
+    if (e.target === document.getElementById('loginModal')) {
+        closeLoginModal();
+    }
+});
+
+// Добавляем начальный сезон при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    loadSeasonsData([]);
+});
