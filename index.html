@@ -12,55 +12,29 @@
         
         <!-- Сайдбар с профилем и реквизитами -->
         <div class="sidebar">
-            <!-- Система аутентификации -->
-            <div class="user-auth-section" id="userAuthSection">
-                <h2 class="auth-title">👤 Аккаунт</h2>
-                <div class="auth-form">
-                    <div class="auth-tabs">
-                        <button class="auth-tab active" onclick="switchAuthTab('login')">Вход</button>
-                        <button class="auth-tab" onclick="switchAuthTab('register')">Регистрация</button>
-                    </div>
-                    
-                    <div class="auth-content active" id="loginContent">
-                        <div class="form-group">
-                            <label>Логин:</label>
-                            <input type="text" id="loginUsername" placeholder="Введите логин">
-                        </div>
-                        <div class="form-group">
-                            <label>Пароль:</label>
-                            <input type="password" id="loginPassword" placeholder="Введите пароль">
-                        </div>
-                        <button class="save-profile" onclick="handleLogin()">🔑 Войти</button>
-                    </div>
-                    
-                    <div class="auth-content" id="registerContent">
-                        <div class="form-group">
-                            <label>Логин:</label>
-                            <input type="text" id="registerUsername" placeholder="Придумайте логин">
-                        </div>
-                        <div class="form-group">
-                            <label>Пароль:</label>
-                            <input type="password" id="registerPassword" placeholder="Придумайте пароль">
-                        </div>
-                        <button class="save-profile" onclick="handleRegister()">📝 Зарегистрироваться</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Профиль пользователя (показывается после входа) -->
-            <div class="user-profile" id="userProfile" style="display: none;">
-                <h2 class="profile-title" id="profileUsername">👤 Пользователь</h2>
+            <!-- Профиль пользователя -->
+            <div class="user-profile">
+                <h2 class="profile-title">👤 Мой профиль</h2>
                 <div class="profile-form">
                     <img src="https://via.placeholder.com/80/ffeef2/d63384?text=AV" alt="Аватар" class="profile-avatar" id="userAvatar">
                     <div class="avatar-upload">
                         <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
                         <label for="avatarInput" class="avatar-label">📷 Сменить аватар</label>
                     </div>
-                    <button class="save-profile" onclick="logoutUser()">🚪 Выйти</button>
+                    <div class="form-group">
+                        <label for="usernameInput">Никнейм:</label>
+                        <input type="text" id="usernameInput" placeholder="Введите ваш никнейм">
+                    </div>
+                    <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
                     
                     <!-- Кнопка доступа к админ-панели -->
                     <button class="admin-access-btn" onclick="toggleAdminMode()" id="adminAccessBtn">
                         🔑 Войти в админ-панель
+                    </button>
+                    
+                    <!-- Кнопка удаления профиля -->
+                    <button class="delete-profile" onclick="deleteUserProfile()">
+                        🗑️ Удалить профиль
                     </button>
                 </div>
             </div>
@@ -86,12 +60,6 @@
                     Ваша поддержка помогает поддерживать хостинг и развивать проект. 
                     Спасибо за ваш вклад! 💖
                 </div>
-            </div>
-
-            <!-- Выбор фона -->
-            <div class="background-picker">
-                <h2 class="profile-title">🎨 Фон сайта</h2>
-                <div class="background-options" id="backgroundOptions"></div>
             </div>
         </div>
 
@@ -236,17 +204,6 @@
                         <!-- Сезоны будут добавляться динамически -->
                     </div>
                 </div>
-
-                <!-- Редактор OVA/ONA/Спешлов -->
-                <div class="seasons-editor">
-                    <div class="seasons-header">
-                        <div class="seasons-title">🎬 OVA/ONA/Спешлы</div>
-                        <button type="button" class="add-season-btn" onclick="addSpecial()">+ Добавить спешл</button>
-                    </div>
-                    <div class="seasons-list" id="specialsList">
-                        <!-- Спешлы будут добавляться динамически -->
-                    </div>
-                </div>
                 
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
@@ -256,6 +213,6 @@
         </div>
     </div>
 
-    <script src="scripts.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
