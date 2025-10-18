@@ -13,7 +13,7 @@ let animeList = [
             "Петр Сидоров - Армин Арлерт",
             "Анна Козлова - Леви Аккерман"
         ],
-        rating: 5,
+        rating: 4.5,
         isBest: true,
         seasons: [
             {
@@ -56,15 +56,22 @@ let animeList = [
                 author: "Алексей",
                 avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=A",
                 text: "Отличная озвучка! Очень понравилась работа актеров.",
-                date: "2024-01-15 14:30"
+                date: "2024-01-15 14:30",
+                rating: 5
             },
             {
                 author: "Мария",
                 avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=M",
                 text: "Смотрела на одном дыхании, спасибо за качественный дубляж!",
-                date: "2024-01-16 09:15"
+                date: "2024-01-16 09:15",
+                rating: 4
             }
-        ]
+        ],
+        commentRatings: {
+            total: 2,
+            average: 4.5,
+            distribution: {5: 1, 4: 1, 3: 0, 2: 0, 1: 0}
+        }
     },
     {
         title: "Ван Пис",
@@ -79,7 +86,7 @@ let animeList = [
             "Дмитрий Новиков - Ророноа Зоро",
             "Елена Воронова - Винсмок Санджи"
         ],
-        rating: 4,
+        rating: 4.2,
         isBest: true,
         seasons: [
             {
@@ -96,7 +103,83 @@ let animeList = [
                 link: "https://shikimori.one/animes/3677-one-piece-movie-10-strong-world"
             }
         ],
-        comments: []
+        comments: [],
+        commentRatings: {
+            total: 0,
+            average: 0,
+            distribution: {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+        }
+    },
+    {
+        title: "Наруто",
+        studio: "Studio Pierrot",
+        description: "История о юном ниндзя Наруто Узумаки, который мечтает стать Хокаге - лидером своей деревни. Несмотря на то, что в нем запечатан Девятихвостый демон-лис, Наруто не сдается и продолжает упорно тренироваться, чтобы достичь своей цели.",
+        voiceType: "dub",
+        voiceYear: 2018,
+        poster: "https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Наруто",
+        voiceActors: [
+            "Александр Новиков - Наруто Узумаки",
+            "Екатерина Семенова - Сакура Харуно",
+            "Михаил Петров - Саске Учиха",
+            "Ольга Иванова - Какаши Хатаке"
+        ],
+        rating: 4.0,
+        isBest: false,
+        seasons: [
+            {
+                name: "Классический Наруто",
+                episodes: 220,
+                link: "https://shikimori.one/animes/20-naruto/classic"
+            },
+            {
+                name: "Наруто: Ураганные хроники",
+                episodes: 500,
+                link: "https://shikimori.one/animes/20-naruto/shippuden"
+            }
+        ],
+        comments: [
+            {
+                author: "Дмитрий",
+                avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=D",
+                text: "Классика жанра! Отличная озвучка, рекомендую всем фанатам аниме.",
+                date: "2024-01-10 18:45",
+                rating: 4
+            }
+        ],
+        commentRatings: {
+            total: 1,
+            average: 4.0,
+            distribution: {5: 0, 4: 1, 3: 0, 2: 0, 1: 0}
+        }
+    },
+    {
+        title: "Ходячий замок",
+        studio: "Studio Ghibli",
+        description: "История о юной шляпнице Софи, которая попадает под действие проклятия и превращается в старуху. В поисках спасения она знакомится с загадочным волшебником Хаулом и его передвигающимся замком.",
+        voiceType: "offscreen",
+        voiceYear: 2020,
+        poster: "https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Ходячий+замок",
+        voiceActors: [
+            "Анна Соколова - Софи",
+            "Игорь Петров - Хаул",
+            "Мария Козлова - Кальцифер",
+            "Сергей Новиков - Маркл"
+        ],
+        rating: 4.8,
+        isBest: true,
+        seasons: [
+            {
+                name: "Полная версия",
+                episodes: 1,
+                link: "https://shikimori.one/animes/430-howl-no-ugoku-shiro"
+            }
+        ],
+        comments: [],
+        commentRatings: {
+            total: 0,
+            average: 0,
+            distribution: {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+        }
     }
 ];
 
@@ -108,11 +191,11 @@ let currentFilter = 'all';
 let currentBestFilter = false;
 let currentYearFilter = 'none';
 let currentEditIndex = -1;
+let currentCommentAnimeIndex = -1;
 let currentUser = {
     username: "Анонимный пользователь",
     avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV",
-    background: "",
-    descriptionStyle: "default"
+    background: ""
 };
 
 // Дебаунс для поиска
@@ -127,6 +210,8 @@ function deleteUserProfile() {
                 anime.comments = anime.comments.filter(comment => 
                     comment.author !== currentUser.username
                 );
+                // Пересчитываем рейтинги после удаления комментариев
+                updateAnimeRating(anime);
             }
         });
         
@@ -134,14 +219,12 @@ function deleteUserProfile() {
         currentUser = {
             username: "Анонимный пользователь",
             avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV",
-            background: "",
-            descriptionStyle: "default"
+            background: ""
         };
         
         // Обновляем UI
         document.getElementById('usernameInput').value = '';
         document.getElementById('userAvatar').src = currentUser.avatar;
-        document.getElementById('descriptionStyle').value = currentUser.descriptionStyle;
         
         // Убираем кастомный фон
         document.body.classList.remove('custom-bg');
@@ -160,7 +243,6 @@ function deleteUserProfile() {
 function saveUserProfile() {
     const usernameInput = document.getElementById('usernameInput');
     const username = usernameInput.value.trim();
-    const descriptionStyle = document.getElementById('descriptionStyle').value;
     
     if (username) {
         // Если пользователь меняет имя, обновляем все его комментарии
@@ -180,12 +262,54 @@ function saveUserProfile() {
         currentUser.username = username;
     }
     
-    currentUser.descriptionStyle = descriptionStyle;
-    
     saveUserToLocalStorage();
     saveToLocalStorage();
     displayAnimeList(animeList);
     showNotification('Профиль сохранен! ✅');
+}
+
+// Функция для обновления рейтинга аниме на основе комментариев
+function updateAnimeRating(anime) {
+    if (!anime.comments || anime.comments.length === 0) {
+        anime.commentRatings = {
+            total: 0,
+            average: 0,
+            distribution: {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+        };
+        return;
+    }
+    
+    const ratedComments = anime.comments.filter(comment => comment.rating);
+    
+    if (ratedComments.length === 0) {
+        anime.commentRatings = {
+            total: 0,
+            average: 0,
+            distribution: {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+        };
+        return;
+    }
+    
+    const total = ratedComments.length;
+    const sum = ratedComments.reduce((acc, comment) => acc + comment.rating, 0);
+    const average = total > 0 ? sum / total : 0;
+    
+    // Считаем распределение оценок
+    const distribution = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0};
+    ratedComments.forEach(comment => {
+        if (comment.rating >= 1 && comment.rating <= 5) {
+            distribution[comment.rating]++;
+        }
+    });
+    
+    anime.commentRatings = {
+        total,
+        average: Math.round(average * 10) / 10,
+        distribution
+    };
+    
+    // Обновляем общий рейтинг аниме
+    anime.rating = Math.round(average * 10) / 10;
 }
 
 // Функция для отображения списка
@@ -256,8 +380,8 @@ function displayAnimeList(list) {
         // Формируем HTML для спешлов
         const specialsHTML = generateSpecialsHTML(anime, index);
         
-        // Применяем стиль описания пользователя
-        const descriptionClass = currentUser.descriptionStyle !== 'default' ? `description ${currentUser.descriptionStyle}` : 'description';
+        // Формируем HTML для статистики оценок
+        const ratingStatsHTML = generateRatingStatsHTML(anime);
         
         const animeItem = document.createElement('div');
         animeItem.className = 'anime-item';
@@ -291,7 +415,7 @@ function displayAnimeList(list) {
                     ` : ''}
                 </div>
                 
-                <div class="${descriptionClass}">${anime.description}</div>
+                <div class="description">${anime.description}</div>
                 
                 <!-- Кнопка для отображения дополнительной информации -->
                 <div class="toggle-details" onclick="toggleDetails(this)">
@@ -301,6 +425,9 @@ function displayAnimeList(list) {
                 <!-- Секция с актерами и комментариями (скрыта по умолчанию) -->
                 <div class="details-section">
                     ${voiceActorsHTML}
+                    
+                    <!-- Статистика оценок -->
+                    ${ratingStatsHTML}
                     
                     <!-- Секция комментариев -->
                     <div class="comments-section">
@@ -312,8 +439,8 @@ function displayAnimeList(list) {
                         <!-- Форма добавления комментария -->
                         <div class="comment-form">
                             <textarea class="comment-input" placeholder="Оставьте ваш комментарий..." id="commentInput-${index}"></textarea>
-                            <button class="submit-comment" onclick="addComment(${index})">
-                                Отправить комментарий
+                            <button class="submit-comment" onclick="openCommentRatingModal(${index})">
+                                ⭐ Оценить и отправить
                             </button>
                         </div>
                         
@@ -328,6 +455,46 @@ function displayAnimeList(list) {
         `;
         animeListElement.appendChild(animeItem);
     });
+}
+
+// Функция для генерации HTML статистики оценок
+function generateRatingStatsHTML(anime) {
+    if (!anime.commentRatings || anime.commentRatings.total === 0) {
+        return '';
+    }
+    
+    const { total, average, distribution } = anime.commentRatings;
+    const percentage = (rating) => {
+        return total > 0 ? (distribution[rating] / total) * 100 : 0;
+    };
+    
+    return `
+        <div class="comment-rating-section">
+            <div class="comment-rating-title">⭐ Оценки зрителей (${total} оценок)</div>
+            <div class="comment-rating-stats">
+                <div style="font-weight: bold; color: #d63384; font-size: 14px;">
+                    ${average.toFixed(1)}/5
+                </div>
+                <div class="rating-progress">
+                    <div class="rating-progress-fill" style="width: ${(average / 5) * 100}%"></div>
+                </div>
+                <div style="color: #868e96; font-size: 11px;">
+                    ${total} оценок
+                </div>
+            </div>
+            <div class="rating-distribution">
+                ${[5, 4, 3, 2, 1].map(rating => `
+                    <div class="rating-bar">
+                        <div class="rating-bar-label">${rating}</div>
+                        <div class="rating-bar-progress">
+                            <div class="rating-bar-fill" style="width: ${percentage(rating)}%"></div>
+                        </div>
+                        <div class="rating-bar-count">${distribution[rating]}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
 }
 
 // Функция для генерации HTML сезонов
@@ -390,6 +557,42 @@ function generateSpecialsHTML(anime, index) {
             </div>
         `;
     }
+}
+
+// Функция для генерации HTML комментариев
+function generateCommentsHTML(anime, index, limit = null) {
+    if (!anime.comments || anime.comments.length === 0) {
+        return '<div class="no-comments">Пока нет комментариев. Будьте первым!</div>';
+    }
+    
+    const commentsToShow = limit ? anime.comments.slice(0, limit) : anime.comments;
+    
+    return commentsToShow.map((comment, commentIndex) => {
+        const isCurrentUserComment = comment.author === currentUser.username;
+        const editDeleteButtons = isCurrentUserComment ? `
+            <button class="edit-comment-btn" onclick="editComment(${index}, ${commentIndex})">✏️</button>
+            <button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>
+        ` : (isAdmin ? `<button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>` : '');
+        
+        const ratingBadge = comment.rating ? `
+            <span class="comment-rating-badge">
+                ⭐ ${comment.rating}/5
+            </span>
+        ` : '';
+        
+        return `
+            <div class="comment-item" id="comment-${index}-${commentIndex}">
+                ${editDeleteButtons}
+                <div class="comment-author">
+                    <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
+                    ${comment.author}
+                    ${ratingBadge}
+                </div>
+                <div class="comment-text">${comment.text}</div>
+                <div class="comment-date">${formatDate(comment.date)}</div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Функция для переключения меню сезонов
@@ -600,7 +803,7 @@ function loadSpecialsData(specials) {
     const specialsList = document.getElementById('specialsList');
     specialsList.innerHTML = '';
     
-    if (specials && seasons.length > 0) {
+    if (specials && specials.length > 0) {
         specials.forEach(special => {
             addSpecial(special);
         });
@@ -642,35 +845,6 @@ function toggleComments(element) {
     }
 }
 
-// Функция для генерации HTML комментариев
-function generateCommentsHTML(anime, index, limit = null) {
-    if (!anime.comments || anime.comments.length === 0) {
-        return '<div class="no-comments">Пока нет комментариев. Будьте первым!</div>';
-    }
-    
-    const commentsToShow = limit ? anime.comments.slice(0, limit) : anime.comments;
-    
-    return commentsToShow.map((comment, commentIndex) => {
-        const isCurrentUserComment = comment.author === currentUser.username;
-        const editDeleteButtons = isCurrentUserComment ? `
-            <button class="edit-comment-btn" onclick="editComment(${index}, ${commentIndex})">✏️</button>
-            <button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>
-        ` : (isAdmin ? `<button class="delete-comment-btn" onclick="deleteComment(${index}, ${commentIndex})">×</button>` : '');
-        
-        return `
-            <div class="comment-item" id="comment-${index}-${commentIndex}">
-                ${editDeleteButtons}
-                <div class="comment-author">
-                    <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
-                    ${comment.author}
-                </div>
-                <div class="comment-text">${comment.text}</div>
-                <div class="comment-date">${formatDate(comment.date)}</div>
-            </div>
-        `;
-    }).join('');
-}
-
 // Функция для форматирования даты
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -683,8 +857,8 @@ function formatDate(dateString) {
     });
 }
 
-// Функция добавления комментария
-function addComment(animeIndex) {
+// Функция для открытия модального окна оценки комментария
+function openCommentRatingModal(animeIndex) {
     const commentInput = document.getElementById(`commentInput-${animeIndex}`);
     const commentText = commentInput.value.trim();
     
@@ -693,23 +867,99 @@ function addComment(animeIndex) {
         return;
     }
     
-    if (!animeList[animeIndex].comments) {
-        animeList[animeIndex].comments = [];
+    currentCommentAnimeIndex = animeIndex;
+    document.getElementById('commentRatingText').value = commentText;
+    document.getElementById('commentRatingModal').style.display = 'block';
+    setupCommentRatingStars();
+}
+
+// Функция для закрытия модального окна оценки комментария
+function closeCommentRatingModal() {
+    document.getElementById('commentRatingModal').style.display = 'none';
+    currentCommentAnimeIndex = -1;
+}
+
+// Функция для настройки звезд рейтинга комментария
+function setupCommentRatingStars() {
+    const stars = document.querySelectorAll('#commentRatingStars .rating-star');
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            setCommentRatingStars(rating);
+        });
+        
+        star.addEventListener('mouseover', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            highlightCommentStars(rating);
+        });
+    });
+    
+    document.getElementById('commentRatingStars').addEventListener('mouseleave', function() {
+        const currentRating = parseInt(document.getElementById('commentRating').value);
+        highlightCommentStars(currentRating);
+    });
+}
+
+function setCommentRatingStars(rating) {
+    document.getElementById('commentRating').value = rating;
+    document.getElementById('commentRatingValue').textContent = `${rating}/5`;
+    highlightCommentStars(rating);
+}
+
+function highlightCommentStars(rating) {
+    const stars = document.querySelectorAll('#commentRatingStars .rating-star');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('active');
+            star.textContent = '⭐';
+        } else {
+            star.classList.remove('active');
+            star.textContent = '☆';
+        }
+    });
+}
+
+// Функция для отправки комментария с оценкой
+function submitCommentWithRating() {
+    const rating = parseInt(document.getElementById('commentRating').value);
+    const commentText = document.getElementById('commentRatingText').value.trim();
+    
+    if (rating === 0) {
+        alert('Пожалуйста, поставьте оценку');
+        return;
+    }
+    
+    if (!commentText) {
+        alert('Пожалуйста, введите текст комментария');
+        return;
+    }
+    
+    if (currentCommentAnimeIndex === -1) return;
+    
+    const anime = animeList[currentCommentAnimeIndex];
+    if (!anime.comments) {
+        anime.comments = [];
     }
     
     const newComment = {
         author: currentUser.username,
         avatar: currentUser.avatar,
         text: commentText,
-        date: new Date().toISOString().replace('T', ' ').substring(0, 16)
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        rating: rating
     };
     
-    animeList[animeIndex].comments.unshift(newComment);
+    anime.comments.unshift(newComment);
+    
+    // Обновляем рейтинг аниме
+    updateAnimeRating(anime);
+    
     saveToLocalStorage();
     displayAnimeList(animeList);
+    closeCommentRatingModal();
     
     // Очищаем поле ввода
-    commentInput.value = '';
+    document.getElementById(`commentInput-${currentCommentAnimeIndex}`).value = '';
 }
 
 // Функция редактирования комментария
@@ -721,6 +971,7 @@ function editComment(animeIndex, commentIndex) {
         <div class="comment-author">
             <img src="${comment.avatar}" alt="Аватар" class="author-avatar">
             ${comment.author}
+            ${comment.rating ? `<span class="comment-rating-badge">⭐ ${comment.rating}/5</span>` : ''}
         </div>
         <div class="comment-edit-form">
             <textarea class="comment-edit-input">${comment.text}</textarea>
@@ -757,7 +1008,12 @@ function deleteComment(animeIndex, commentIndex) {
         return;
     }
     
+    const deletedComment = animeList[animeIndex].comments[commentIndex];
     animeList[animeIndex].comments.splice(commentIndex, 1);
+    
+    // Обновляем рейтинг аниме после удаления комментария
+    updateAnimeRating(animeList[animeIndex]);
+    
     saveToLocalStorage();
     displayAnimeList(animeList);
 }
@@ -799,6 +1055,7 @@ function clearAllComments(animeIndex) {
     
     if (confirm('Вы уверены, что хотите удалить ВСЕ комментарии к этому аниме?')) {
         animeList[animeIndex].comments = [];
+        updateAnimeRating(animeList[animeIndex]);
         saveToLocalStorage();
         displayAnimeList(animeList);
         document.querySelector('.modal').remove();
@@ -1171,7 +1428,16 @@ function saveAnime(title, studio, voiceType, voiceYear, description, voiceActors
         isBest,
         seasons,
         specials,
-        comments: editIndex !== '-1' ? animeList[editIndex].comments || [] : []
+        comments: editIndex !== '-1' ? animeList[editIndex].comments || [] : [],
+        commentRatings: editIndex !== '-1' ? animeList[editIndex].commentRatings || {
+            total: 0,
+            average: 0,
+            distribution: {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+        } : {
+            total: 0,
+            average: 0,
+            distribution: {5: 0, 4: 0, 3: 0, 2: 0, 1: 0}
+        }
     };
     
     if (editIndex === '-1') {
@@ -1265,7 +1531,6 @@ if (savedUser) {
     currentUser = savedUser;
     document.getElementById('usernameInput').value = currentUser.username;
     document.getElementById('userAvatar').src = currentUser.avatar;
-    document.getElementById('descriptionStyle').value = currentUser.descriptionStyle;
     
     // Восстанавливаем фон если есть
     if (currentUser.background) {
@@ -1287,6 +1552,9 @@ window.addEventListener('click', function(e) {
     }
     if (e.target === document.getElementById('loginModal')) {
         closeLoginModal();
+    }
+    if (e.target === document.getElementById('commentRatingModal')) {
+        closeCommentRatingModal();
     }
 });
 
