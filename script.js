@@ -37,6 +37,20 @@ let animeList = [
                 link: "https://shikimori.one/animes/16498-shingeki-no-kyojin/final"
             }
         ],
+        specials: [
+            {
+                name: "OVA: Ilse's Notebook",
+                type: "OVA",
+                episodes: 1,
+                link: "https://shikimori.one/animes/16498-shingeki-no-kyojin/specials"
+            },
+            {
+                name: "OVA: A Choice with No Regrets",
+                type: "OVA", 
+                episodes: 2,
+                link: "https://shikimori.one/animes/16498-shingeki-no-kyojin/specials"
+            }
+        ],
         comments: [
             {
                 author: "Алексей",
@@ -74,64 +88,12 @@ let animeList = [
                 link: "https://shikimori.one/animes/21-one-piece/season1"
             }
         ],
-        comments: []
-    },
-    {
-        title: "Наруто",
-        studio: "Studio Pierrot",
-        description: "История о юном ниндзя Наруто Узумаки, который мечтает стать Хокаге - лидером своей деревни. Несмотря на то, что в нем запечатан Девятихвостый демон-лис, Наруто не сдается и продолжает упорно тренироваться, чтобы достичь своей цели.",
-        voiceType: "dub",
-        voiceYear: 2018,
-        poster: "https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Наруто",
-        voiceActors: [
-            "Александр Новиков - Наруто Узумаки",
-            "Екатерина Семенова - Сакура Харуно",
-            "Михаил Петров - Саске Учиха",
-            "Ольга Иванова - Какаши Хатаке"
-        ],
-        rating: 4,
-        isBest: false,
-        seasons: [
+        specials: [
             {
-                name: "Классический Наруто",
-                episodes: 220,
-                link: "https://shikimori.one/animes/20-naruto/classic"
-            },
-            {
-                name: "Наруто: Ураганные хроники",
-                episodes: 500,
-                link: "https://shikimori.one/animes/20-naruto/shippuden"
-            }
-        ],
-        comments: [
-            {
-                author: "Дмитрий",
-                avatar: "https://via.placeholder.com/40/ffeef2/d63384?text=D",
-                text: "Классика жанра! Отличная озвучка, рекомендую всем фанатам аниме.",
-                date: "2024-01-10 18:45"
-            }
-        ]
-    },
-    {
-        title: "Ходячий замок",
-        studio: "Studio Ghibli",
-        description: "История о юной шляпнице Софи, которая попадает под действие проклятия и превращается в старуху. В поисках спасения она знакомится с загадочным волшебником Хаулом и его передвигающимся замком.",
-        voiceType: "offscreen",
-        voiceYear: 2020,
-        poster: "https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Ходячий+замок",
-        voiceActors: [
-            "Анна Соколова - Софи",
-            "Игорь Петров - Хаул",
-            "Мария Козлова - Кальцифер",
-            "Сергей Новиков - Маркл"
-        ],
-        rating: 5,
-        isBest: true,
-        seasons: [
-            {
-                name: "Полная версия",
+                name: "Фильм: Strong World",
+                type: "Фильм",
                 episodes: 1,
-                link: "https://shikimori.one/animes/430-howl-no-ugoku-shiro"
+                link: "https://shikimori.one/animes/3677-one-piece-movie-10-strong-world"
             }
         ],
         comments: []
@@ -139,6 +101,7 @@ let animeList = [
 ];
 
 // Настройки администратора
+const ADMIN_LOGIN = "admin";
 const ADMIN_PASSWORD = "admin123";
 let isAdmin = false;
 let currentFilter = 'all';
@@ -147,7 +110,9 @@ let currentYearFilter = 'none';
 let currentEditIndex = -1;
 let currentUser = {
     username: "Анонимный пользователь",
-    avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
+    avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV",
+    background: "",
+    descriptionStyle: "default"
 };
 
 // Дебаунс для поиска
@@ -168,12 +133,19 @@ function deleteUserProfile() {
         // Сбрасываем профиль пользователя
         currentUser = {
             username: "Анонимный пользователь",
-            avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV"
+            avatar: "https://via.placeholder.com/80/ffeef2/d63384?text=AV",
+            background: "",
+            descriptionStyle: "default"
         };
         
         // Обновляем UI
         document.getElementById('usernameInput').value = '';
         document.getElementById('userAvatar').src = currentUser.avatar;
+        document.getElementById('descriptionStyle').value = currentUser.descriptionStyle;
+        
+        // Убираем кастомный фон
+        document.body.classList.remove('custom-bg');
+        document.body.style.backgroundImage = '';
         
         // Сохраняем изменения
         saveToLocalStorage();
@@ -188,6 +160,7 @@ function deleteUserProfile() {
 function saveUserProfile() {
     const usernameInput = document.getElementById('usernameInput');
     const username = usernameInput.value.trim();
+    const descriptionStyle = document.getElementById('descriptionStyle').value;
     
     if (username) {
         // Если пользователь меняет имя, обновляем все его комментарии
@@ -206,6 +179,8 @@ function saveUserProfile() {
         
         currentUser.username = username;
     }
+    
+    currentUser.descriptionStyle = descriptionStyle;
     
     saveUserToLocalStorage();
     saveToLocalStorage();
@@ -278,6 +253,12 @@ function displayAnimeList(list) {
         // Формируем HTML для сезонов
         const seasonsHTML = generateSeasonsHTML(anime, index);
         
+        // Формируем HTML для спешлов
+        const specialsHTML = generateSpecialsHTML(anime, index);
+        
+        // Применяем стиль описания пользователя
+        const descriptionClass = currentUser.descriptionStyle !== 'default' ? `description ${currentUser.descriptionStyle}` : 'description';
+        
         const animeItem = document.createElement('div');
         animeItem.className = 'anime-item';
         animeItem.innerHTML = `
@@ -286,12 +267,15 @@ function displayAnimeList(list) {
                      onerror="this.src='https://via.placeholder.com/1000x1500/ffeef2/d63384?text=Постер+не+найден'">
                 <div class="anime-actions">
                     ${seasonsHTML}
-                    <button class="edit-btn" onclick="editAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
-                        ✏️ Редактировать
-                    </button>
-                    <button class="delete-btn" onclick="deleteAnime(${index})" ${!isAdmin ? 'disabled' : ''}>
-                        🗑️ Удалить
-                    </button>
+                    ${specialsHTML}
+                    ${isAdmin ? `
+                        <button class="edit-btn" onclick="editAnime(${index})">
+                            ✏️ Редактировать
+                        </button>
+                        <button class="delete-btn" onclick="deleteAnime(${index})">
+                            🗑️ Удалить
+                        </button>
+                    ` : ''}
                 </div>
             </div>
             <div class="anime-content">
@@ -307,7 +291,7 @@ function displayAnimeList(list) {
                     ` : ''}
                 </div>
                 
-                <div class="description">${anime.description}</div>
+                <div class="${descriptionClass}">${anime.description}</div>
                 
                 <!-- Кнопка для отображения дополнительной информации -->
                 <div class="toggle-details" onclick="toggleDetails(this)">
@@ -377,6 +361,37 @@ function generateSeasonsHTML(anime, index) {
     }
 }
 
+// Функция для генерации HTML спешлов
+function generateSpecialsHTML(anime, index) {
+    if (!anime.specials || anime.specials.length === 0) {
+        return '';
+    }
+    
+    if (anime.specials.length === 1) {
+        // Если только один спешл, показываем прямую ссылку
+        return `<a href="${anime.specials[0].link}" target="_blank" class="specials-btn">🎬 ${anime.specials[0].type}</a>`;
+    } else {
+        // Если несколько спешлов, показываем выпадающее меню
+        const specialsList = anime.specials.map((special, specialIndex) => `
+            <div class="special-item" onclick="window.open('${special.link}', '_blank')">
+                <div class="special-name">${special.name}</div>
+                <div class="special-type">${special.type} • ${special.episodes} эп.</div>
+            </div>
+        `).join('');
+        
+        return `
+            <div class="specials-dropdown">
+                <div class="specials-btn" onclick="toggleSpecialsMenu(this)">
+                    🎬 OVA/Спешлы (${anime.specials.length})
+                </div>
+                <div class="specials-menu">
+                    ${specialsList}
+                </div>
+            </div>
+        `;
+    }
+}
+
 // Функция для переключения меню сезонов
 function toggleSeasonsMenu(element) {
     const menu = element.nextElementSibling;
@@ -397,10 +412,35 @@ function toggleSeasonsMenu(element) {
     }
 }
 
-// Закрытие меню сезонов при клике вне его
+// Функция для переключения меню спешлов
+function toggleSpecialsMenu(element) {
+    const menu = element.nextElementSibling;
+    const isVisible = menu.classList.contains('show');
+    
+    // Закрываем все открытые меню
+    document.querySelectorAll('.specials-menu.show').forEach(openMenu => {
+        if (openMenu !== menu) {
+            openMenu.classList.remove('show');
+        }
+    });
+    
+    // Переключаем текущее меню
+    if (isVisible) {
+        menu.classList.remove('show');
+    } else {
+        menu.classList.add('show');
+    }
+}
+
+// Закрытие меню при клике вне их
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.seasons-dropdown')) {
         document.querySelectorAll('.seasons-menu.show').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+    if (!e.target.closest('.specials-dropdown')) {
+        document.querySelectorAll('.specials-menu.show').forEach(menu => {
             menu.classList.remove('show');
         });
     }
@@ -437,6 +477,46 @@ function addSeason(seasonData = null) {
     seasonsList.appendChild(seasonEditor);
 }
 
+// Функции для редактора спешлов
+function addSpecial(specialData = null) {
+    const specialsList = document.getElementById('specialsList');
+    const specialIndex = specialsList.children.length;
+    
+    const specialEditor = document.createElement('div');
+    specialEditor.className = 'season-editor-item';
+    specialEditor.innerHTML = `
+        <div class="season-editor-header">
+            <div class="season-number">Спешл ${specialIndex + 1}</div>
+            <button type="button" class="remove-season-btn" onclick="removeSpecial(this)">×</button>
+        </div>
+        <div class="season-fields">
+            <div class="season-field">
+                <label>Название</label>
+                <input type="text" class="special-name" value="${specialData ? specialData.name : `Спешл ${specialIndex + 1}`}" placeholder="Например: OVA 1">
+            </div>
+            <div class="season-field">
+                <label>Тип</label>
+                <select class="special-type">
+                    <option value="OVA" ${specialData && specialData.type === 'OVA' ? 'selected' : ''}>OVA</option>
+                    <option value="ONA" ${specialData && specialData.type === 'ONA' ? 'selected' : ''}>ONA</option>
+                    <option value="Фильм" ${specialData && specialData.type === 'Фильм' ? 'selected' : ''}>Фильм</option>
+                    <option value="Спешл" ${specialData && specialData.type === 'Спешл' ? 'selected' : ''}>Спешл</option>
+                </select>
+            </div>
+            <div class="season-field">
+                <label>Количество эпизодов</label>
+                <input type="number" class="special-episodes" value="${specialData ? specialData.episodes : 1}" min="1" max="100">
+            </div>
+            <div class="season-field full-width">
+                <label>Ссылка для просмотра</label>
+                <input type="url" class="special-link" value="${specialData ? specialData.link : ''}" placeholder="https://example.com/special1">
+            </div>
+        </div>
+    `;
+    
+    specialsList.appendChild(specialEditor);
+}
+
 function removeSeason(button) {
     const seasonEditor = button.closest('.season-editor-item');
     seasonEditor.remove();
@@ -445,6 +525,17 @@ function removeSeason(button) {
     const seasonsList = document.getElementById('seasonsList');
     Array.from(seasonsList.children).forEach((editor, index) => {
         editor.querySelector('.season-number').textContent = `Сезон ${index + 1}`;
+    });
+}
+
+function removeSpecial(button) {
+    const specialEditor = button.closest('.season-editor-item');
+    specialEditor.remove();
+    
+    // Обновляем номера спешлов
+    const specialsList = document.getElementById('specialsList');
+    Array.from(specialsList.children).forEach((editor, index) => {
+        editor.querySelector('.season-number').textContent = `Спешл ${index + 1}`;
     });
 }
 
@@ -469,6 +560,29 @@ function getSeasonsData() {
     return seasons;
 }
 
+function getSpecialsData() {
+    const specialsList = document.getElementById('specialsList');
+    const specials = [];
+    
+    Array.from(specialsList.children).forEach(editor => {
+        const name = editor.querySelector('.special-name').value;
+        const type = editor.querySelector('.special-type').value;
+        const episodes = parseInt(editor.querySelector('.special-episodes').value);
+        const link = editor.querySelector('.special-link').value;
+        
+        if (name && link) {
+            specials.push({
+                name,
+                type,
+                episodes,
+                link
+            });
+        }
+    });
+    
+    return specials;
+}
+
 function loadSeasonsData(seasons) {
     const seasonsList = document.getElementById('seasonsList');
     seasonsList.innerHTML = '';
@@ -479,6 +593,17 @@ function loadSeasonsData(seasons) {
         });
     } else {
         addSeason(); // Добавляем один сезон по умолчанию
+    }
+}
+
+function loadSpecialsData(specials) {
+    const specialsList = document.getElementById('specialsList');
+    specialsList.innerHTML = '';
+    
+    if (specials && seasons.length > 0) {
+        specials.forEach(special => {
+            addSpecial(special);
+        });
     }
 }
 
@@ -694,6 +819,22 @@ document.getElementById('avatarInput').addEventListener('change', function(e) {
     }
 });
 
+// Функция загрузки фона
+document.getElementById('backgroundInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            currentUser.background = e.target.result;
+            document.body.classList.add('custom-bg');
+            document.body.style.setProperty('--custom-bg', `url(${e.target.result})`);
+            saveUserToLocalStorage();
+            showNotification('Фон успешно установлен! 🎨');
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
 // Функция копирования реквизитов
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text.replace(/\s/g, '')).then(() => {
@@ -750,6 +891,9 @@ function editAnime(index) {
     
     // Загружаем сезоны
     loadSeasonsData(anime.seasons);
+    
+    // Загружаем спешлы
+    loadSpecialsData(anime.specials);
     
     openModal();
 }
@@ -860,40 +1004,38 @@ function highlightStars(rating) {
 
 // Функции админ-панели
 function toggleAdminMode() {
-    if (!isAdmin) {
-        document.getElementById('loginModal').classList.add('active');
+    document.getElementById('loginModal').classList.add('active');
+}
+
+function loginAdmin(login, password) {
+    if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
+        isAdmin = true;
+        updateAdminUI();
+        displayAnimeList(animeList);
+        closeLoginModal();
+        showNotification('Успешный вход в админ-панель! 👑');
+        return true;
     }
+    return false;
 }
 
 function logoutAdmin() {
     isAdmin = false;
     updateAdminUI();
     displayAnimeList(animeList);
+    showNotification('Вы вышли из админ-панели');
 }
 
 function updateAdminUI() {
     const adminPanel = document.getElementById('adminPanel');
-    const adminStatus = document.getElementById('adminStatus');
-    const adminToggle = document.getElementById('adminToggle');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const addBtn = document.getElementById('addBtn');
+    const adminAccessBtn = document.getElementById('adminAccessBtn');
     
     if (isAdmin) {
         adminPanel.style.display = 'block';
-        adminStatus.textContent = '👑 Режим администратора';
-        adminStatus.className = 'admin-status on';
-        adminToggle.style.display = 'none';
-        logoutBtn.style.display = 'block';
-        addBtn.style.display = 'block';
-        addBtn.disabled = false;
+        adminAccessBtn.style.display = 'none';
     } else {
         adminPanel.style.display = 'none';
-        adminStatus.textContent = '🔐 Режим пользователя';
-        adminStatus.className = 'admin-status off';
-        adminToggle.style.display = 'block';
-        logoutBtn.style.display = 'none';
-        addBtn.style.display = 'none';
-        addBtn.disabled = true;
+        adminAccessBtn.style.display = 'block';
     }
 }
 
@@ -912,8 +1054,9 @@ function openAddModal() {
     document.getElementById('imagePreview').innerHTML = '<span style="color: #f8bbd9;">Превью постера</span>';
     setRatingStars(0);
     
-    // Сбрасываем сезоны (добавляем один по умолчанию)
+    // Сбрасываем сезоны и спешлы
     loadSeasonsData([]);
+    loadSpecialsData([]);
     
     openModal();
 }
@@ -931,16 +1074,11 @@ function closeLoginModal() {
 // Обработка формы входа
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    const login = document.getElementById('adminLogin').value;
     const password = document.getElementById('adminPassword').value;
     
-    if (password === ADMIN_PASSWORD) {
-        isAdmin = true;
-        updateAdminUI();
-        displayAnimeList(animeList);
-        closeLoginModal();
-        showNotification('Успешный вход в админ-панель! 👑');
-    } else {
-        alert('Неверный пароль!');
+    if (!loginAdmin(login, password)) {
+        alert('Неверный логин или пароль!');
     }
 });
 
@@ -1012,8 +1150,9 @@ function validateAnimeData(data) {
 }
 
 function saveAnime(title, studio, voiceType, voiceYear, description, voiceActors, poster, rating, isBest, editIndex) {
-    // Получаем данные сезонов
+    // Получаем данные сезонов и спешлов
     const seasons = getSeasonsData();
+    const specials = getSpecialsData();
     
     // Если нет постера, используем заглушку
     if (!poster) {
@@ -1031,6 +1170,7 @@ function saveAnime(title, studio, voiceType, voiceYear, description, voiceActors
         rating,
         isBest,
         seasons,
+        specials,
         comments: editIndex !== '-1' ? animeList[editIndex].comments || [] : []
     };
     
@@ -1125,6 +1265,13 @@ if (savedUser) {
     currentUser = savedUser;
     document.getElementById('usernameInput').value = currentUser.username;
     document.getElementById('userAvatar').src = currentUser.avatar;
+    document.getElementById('descriptionStyle').value = currentUser.descriptionStyle;
+    
+    // Восстанавливаем фон если есть
+    if (currentUser.background) {
+        document.body.classList.add('custom-bg');
+        document.body.style.setProperty('--custom-bg', `url(${currentUser.background})`);
+    }
 }
 
 // Первоначальная загрузка
@@ -1146,4 +1293,5 @@ window.addEventListener('click', function(e) {
 // Добавляем начальный сезон при загрузке
 document.addEventListener('DOMContentLoaded', function() {
     loadSeasonsData([]);
+    loadSpecialsData([]);
 });
