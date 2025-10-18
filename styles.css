@@ -10,6 +10,11 @@ body {
     color: #5a2d47;
     min-height: 100vh;
     padding: 20px;
+    transition: background-image 0.3s ease;
+}
+
+body.custom-bg {
+    background: var(--custom-bg) center/cover no-repeat fixed !important;
 }
 
 .container {
@@ -21,7 +26,7 @@ body {
 }
 
 .sidebar {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
@@ -29,6 +34,7 @@ body {
     height: fit-content;
     position: sticky;
     top: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .main-content {
@@ -47,13 +53,14 @@ h1 {
 }
 
 .admin-panel {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
     box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
     border: 2px solid #f8bbd9;
     display: none;
+    backdrop-filter: blur(10px);
 }
 
 .admin-controls {
@@ -105,6 +112,7 @@ h1 {
     gap: 12px;
     margin-bottom: 15px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .search-box {
@@ -208,7 +216,7 @@ h1 {
 }
 
 .anime-item {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(214, 51, 132, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
@@ -217,6 +225,7 @@ h1 {
     overflow: hidden;
     display: flex;
     flex-direction: row;
+    backdrop-filter: blur(10px);
 }
 
 .anime-item:hover {
@@ -297,6 +306,56 @@ h1 {
     font-weight: 600;
 }
 
+/* Стили для описания */
+.description {
+    margin: 0;
+    line-height: 1.5;
+    color: #6b4a5a;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 80px;
+    padding-right: 8px;
+    min-height: 50px;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.description.italic {
+    font-style: italic;
+}
+
+.description.bold {
+    font-weight: bold;
+}
+
+.description.fancy {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #8b4513;
+    background: linear-gradient(45deg, #fff5f7, #ffeef2);
+    padding: 8px;
+    border-radius: 8px;
+    border-left: 3px solid #d63384;
+}
+
+.description::-webkit-scrollbar {
+    width: 4px;
+}
+
+.description::-webkit-scrollbar-track {
+    background: #fff5f7;
+    border-radius: 2px;
+}
+
+.description::-webkit-scrollbar-thumb {
+    background: #f8bbd9;
+    border-radius: 2px;
+}
+
+.description::-webkit-scrollbar-thumb:hover {
+    background: #d63384;
+}
+
 .voice-actors {
     margin: 10px 0;
     padding: 10px;
@@ -323,36 +382,6 @@ h1 {
 
 .voice-actor:last-child {
     margin-bottom: 0;
-}
-
-.description {
-    margin: 0;
-    line-height: 1.5;
-    color: #6b4a5a;
-    flex: 1;
-    overflow-y: auto;
-    max-height: 80px;
-    padding-right: 8px;
-    min-height: 50px;
-    font-size: 13px;
-}
-
-.description::-webkit-scrollbar {
-    width: 4px;
-}
-
-.description::-webkit-scrollbar-track {
-    background: #fff5f7;
-    border-radius: 2px;
-}
-
-.description::-webkit-scrollbar-thumb {
-    background: #f8bbd9;
-    border-radius: 2px;
-}
-
-.description::-webkit-scrollbar-thumb:hover {
-    background: #d63384;
 }
 
 .anime-actions {
@@ -760,6 +789,8 @@ h1 {
     cursor: pointer;
     font-size: 13px;
     transition: all 0.3s;
+    display: inline-block;
+    margin: 2px;
 }
 
 .avatar-label:hover {
@@ -779,7 +810,7 @@ h1 {
     font-size: 13px;
 }
 
-.form-group input {
+.form-group input, .form-group select, .form-group textarea {
     width: 100%;
     padding: 8px;
     border: 2px solid #f8bbd9;
@@ -787,9 +818,10 @@ h1 {
     font-size: 13px;
     outline: none;
     transition: border-color 0.3s;
+    background: white;
 }
 
-.form-group input:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     border-color: #d63384;
 }
 
@@ -833,12 +865,11 @@ h1 {
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 8px 16px;
+    padding: 10px 16px;
     cursor: pointer;
     font-size: 13px;
     transition: all 0.3s;
-    width: 100%;
-    margin-top: 8px;
+    white-space: nowrap;
 }
 
 .admin-access-btn:hover {
@@ -855,6 +886,7 @@ h1 {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 1000;
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
@@ -1195,6 +1227,81 @@ h1 {
     grid-column: 1 / -1;
 }
 
+/* Стили для спешлов */
+.specials-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.specials-btn {
+    color: #8b4513;
+    text-decoration: none;
+    padding: 6px 10px;
+    background: #fffaf0;
+    border-radius: 10px;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+    text-align: center;
+    font-size: 11px;
+    width: 100%;
+    cursor: pointer;
+    display: block;
+}
+
+.specials-btn:hover {
+    background: #8b4513;
+    color: white;
+    border-color: #8b4513;
+}
+
+.specials-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #f8bbd9;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(214, 51, 132, 0.2);
+    z-index: 100;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.specials-menu.show {
+    display: block;
+}
+
+.special-item {
+    padding: 6px 10px;
+    border-bottom: 1px solid #f8bbd9;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 11px;
+}
+
+.special-item:last-child {
+    border-bottom: none;
+}
+
+.special-item:hover {
+    background: #fffaf0;
+    color: #8b4513;
+}
+
+.special-name {
+    font-weight: 500;
+}
+
+.special-type {
+    font-size: 10px;
+    color: #868e96;
+    margin-top: 1px;
+}
+
 /* Новые стили для улучшений */
 .loading {
     display: inline-block;
@@ -1274,6 +1381,14 @@ h1 {
     .season-fields {
         grid-template-columns: 1fr;
     }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .admin-access-btn {
+        width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1293,5 +1408,9 @@ h1 {
     .anime-poster {
         max-width: 200px;
         margin: 0 auto;
+    }
+    
+    body {
+        padding: 10px;
     }
 }
