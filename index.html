@@ -25,12 +25,26 @@
                         <label for="usernameInput">Никнейм:</label>
                         <input type="text" id="usernameInput" placeholder="Введите ваш никнейм">
                     </div>
-                    <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
                     
-                    <!-- Кнопка доступа к админ-панели -->
-                    <button class="admin-access-btn" onclick="toggleAdminMode()" id="adminAccessBtn">
-                        🔑 Войти в админ-панель
-                    </button>
+                    <!-- Настройки фона -->
+                    <div class="form-group">
+                        <label for="backgroundInput">🎨 Фон сайта:</label>
+                        <input type="file" id="backgroundInput" class="avatar-input" accept="image/*">
+                        <label for="backgroundInput" class="avatar-label">Выбрать фон</label>
+                    </div>
+                    
+                    <!-- Настройки оформления -->
+                    <div class="form-group">
+                        <label for="descriptionStyle">📝 Стиль описания:</label>
+                        <select id="descriptionStyle">
+                            <option value="default">Обычный</option>
+                            <option value="italic">Курсив</option>
+                            <option value="bold">Жирный</option>
+                            <option value="fancy">Красивый</option>
+                        </select>
+                    </div>
+                    
+                    <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
                     
                     <!-- Кнопка удаления профиля -->
                     <button class="delete-profile" onclick="deleteUserProfile()">
@@ -68,14 +82,14 @@
             <!-- Панель администратора -->
             <div class="admin-panel" id="adminPanel">
                 <div class="admin-controls">
-                    <div class="admin-status off" id="adminStatus">
-                        🔐 Режим пользователя
+                    <div class="admin-status on" id="adminStatus">
+                        👑 Режим администратора
                     </div>
-                    <button class="admin-btn" onclick="toggleAdminMode()" id="adminToggle">
-                        🔑 Войти как админ
-                    </button>
-                    <button class="admin-btn logout" onclick="logoutAdmin()" id="logoutBtn" style="display: none;">
+                    <button class="admin-btn logout" onclick="logoutAdmin()" id="logoutBtn">
                         🚪 Выйти
+                    </button>
+                    <button class="add-btn" onclick="openAddModal()" id="addBtn">
+                        + Добавить аниме
                     </button>
                 </div>
             </div>
@@ -84,8 +98,8 @@
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="🔍 Поиск аниме...">
                 </div>
-                <button class="add-btn" onclick="openAddModal()" id="addBtn" disabled>
-                    + Добавить аниме
+                <button class="admin-access-btn" onclick="toggleAdminMode()" id="adminAccessBtn">
+                    🔑 Войти в админ-панель
                 </button>
             </div>
             
@@ -110,11 +124,15 @@
         Реквизиты скопированы! 📋
     </div>
 
-    <!-- Модальное окно входа -->
+    <!-- Модальное окно входа в админ-панель -->
     <div class="modal login-modal" id="loginModal">
         <div class="modal-content">
             <h2 style="margin-bottom: 15px; color: #d63384;">Вход для администратора</h2>
             <form id="loginForm">
+                <div class="form-group">
+                    <label>Логин администратора</label>
+                    <input type="text" id="adminLogin" required placeholder="Введите логин">
+                </div>
                 <div class="form-group">
                     <label>Пароль администратора</label>
                     <input type="password" id="adminPassword" required placeholder="Введите пароль">
@@ -142,7 +160,6 @@
                 <div class="form-group">
                     <label>Студии (через запятую)</label>
                     <input type="text" id="animeStudio" required placeholder="Например: Wit Studio, MAPPA">
-                    <small style="color: #868e96; font-size: 11px;">Перечислите студии через запятую</small>
                 </div>
                 
                 <div class="form-group">
@@ -176,8 +193,7 @@
                 
                 <div class="form-group">
                     <label>Актеры озвучки (каждый с новой строки)</label>
-                    <textarea id="animeVoiceActors" rows="3" placeholder="Имя актера - роль&#10;Например:&#10;Иван Иванов - Эрен Йегер&#10;Мария Петрова - Микаса Аккерман"></textarea>
-                    <small style="color: #868e96; font-size: 11px;">Вводите каждого актера с его ролью на отдельной строке</small>
+                    <textarea id="animeVoiceActors" rows="3" placeholder="Имя актера - роль"></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -202,6 +218,17 @@
                     </div>
                     <div class="seasons-list" id="seasonsList">
                         <!-- Сезоны будут добавляться динамически -->
+                    </div>
+                </div>
+                
+                <!-- Редактор OVA/ONA/Спешлов -->
+                <div class="seasons-editor">
+                    <div class="seasons-header">
+                        <div class="seasons-title">🎬 OVA / ONA / Спешлы</div>
+                        <button type="button" class="add-season-btn" onclick="addSpecial()">+ Добавить</button>
+                    </div>
+                    <div class="seasons-list" id="specialsList">
+                        <!-- Спешлы будут добавляться динамически -->
                     </div>
                 </div>
                 
