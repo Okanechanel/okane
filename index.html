@@ -33,17 +33,6 @@
                         <label for="backgroundInput" class="avatar-label">Выбрать фон</label>
                     </div>
                     
-                    <!-- Настройки оформления -->
-                    <div class="form-group">
-                        <label for="descriptionStyle">📝 Стиль описания:</label>
-                        <select id="descriptionStyle">
-                            <option value="default">Обычный</option>
-                            <option value="italic">Курсив</option>
-                            <option value="bold">Жирный</option>
-                            <option value="fancy">Красивый</option>
-                        </select>
-                    </div>
-                    
                     <button class="save-profile" onclick="saveUserProfile()">💾 Сохранить профиль</button>
                     
                     <!-- Кнопка удаления профиля -->
@@ -237,6 +226,35 @@
                     <button type="submit" class="btn btn-primary" id="modalSubmit">Добавить</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно оценки комментария -->
+    <div class="modal" id="commentRatingModal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px; color: #d63384;">⭐ Оцените аниме</h2>
+            <div class="form-group">
+                <label>Ваша оценка для этого комментария:</label>
+                <div class="rating-input">
+                    <div class="rating-stars" id="commentRatingStars">
+                        <span class="rating-star" data-rating="1">☆</span>
+                        <span class="rating-star" data-rating="2">☆</span>
+                        <span class="rating-star" data-rating="3">☆</span>
+                        <span class="rating-star" data-rating="4">☆</span>
+                        <span class="rating-star" data-rating="5">☆</span>
+                    </div>
+                    <input type="hidden" id="commentRating" value="0">
+                    <span id="commentRatingValue">0/5</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Ваш комментарий:</label>
+                <textarea id="commentRatingText" rows="3" placeholder="Напишите ваш отзыв..."></textarea>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="closeCommentRatingModal()">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="submitCommentWithRating()">Отправить</button>
+            </div>
         </div>
     </div>
 
