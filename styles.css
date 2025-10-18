@@ -1414,3 +1414,126 @@ h1 {
         padding: 10px;
     }
 }
+
+.comment-rating-section {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #ffd700;
+}
+
+.comment-rating-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8a6d0c;
+    margin-bottom: 6px;
+}
+
+.comment-rating-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #5a2d47;
+}
+
+.rating-progress {
+    flex: 1;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 6px;
+}
+
+.rating-progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.rating-distribution {
+    margin-top: 8px;
+}
+
+.rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+.rating-bar-label {
+    width: 20px;
+    text-align: center;
+    color: #868e96;
+}
+
+.rating-bar-progress {
+    flex: 1;
+    background: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 4px;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    transition: width 0.3s ease;
+}
+
+.rating-bar-count {
+    width: 30px;
+    text-align: right;
+    color: #868e96;
+    font-size: 10px;
+}
+
+.rate-comment-btn {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #8a6d0c;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.3s;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rate-comment-btn:hover {
+    background: linear-gradient(135deg, #ff6b00, #ff8c00);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.comment-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: #fff5f7;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 10px;
+    color: #8a6d0c;
+    margin-left: 6px;
+    border: 1px solid #ffed4e;
+}
+
+@media (max-width: 768px) {
+    .comment-rating-stats {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    
+    .rating-distribution {
+        margin-top: 6px;
+    }
+}
