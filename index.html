@@ -19,7 +19,7 @@
             <i class="fas fa-palette"></i> Настройки фона
         </button>
 
-        <!-- Панель настроек фона (изначально скрыта) -->
+        <!-- Панель настроек фона -->
         <div class="settings-panel" id="settingsPanel">
             <div class="settings-header">
                 <h3><i class="fas fa-palette"></i> Настройки фона</h3>
@@ -33,23 +33,23 @@
                 <div class="bg-option-group">
                     <h4><i class="fas fa-fill-drip"></i> Градиенты</h4>
                     <div class="bg-options-grid">
-                        <div class="bg-option" data-bg="gradient1" style="background: linear-gradient(135deg, #ff6bcb 0%, #8b5cf6 100%);">
-                            <span>Розовый-фиолетовый</span>
+                        <div class="bg-option" data-bg="gradient1" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+                            <span>Космос</span>
                         </div>
-                        <div class="bg-option" data-bg="gradient2" style="background: linear-gradient(135deg, #ec4899 0%, #7c3aed 100%);">
-                            <span>Яркий градиент</span>
+                        <div class="bg-option" data-bg="gradient2" style="background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);">
+                            <span>Ночь</span>
                         </div>
-                        <div class="bg-option" data-bg="gradient3" style="background: linear-gradient(135deg, #f472b6 0%, #d946ef 50%, #a855f7 100%);">
-                            <span>Пастельный</span>
+                        <div class="bg-option" data-bg="gradient3" style="background: linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%);">
+                            <span>Закат</span>
                         </div>
-                        <div class="bg-option" data-bg="gradient4" style="background: linear-gradient(135deg, #f9a8d4 0%, #e879f9 100%);">
-                            <span>Светлый</span>
+                        <div class="bg-option" data-bg="gradient4" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                            <span>Океан</span>
                         </div>
-                        <div class="bg-option" data-bg="gradient5" style="background: linear-gradient(135deg, #be185d 0%, #7e22ce 100%);">
-                            <span>Тёмный</span>
+                        <div class="bg-option" data-bg="gradient5" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            <span>Зелень</span>
                         </div>
-                        <div class="bg-option" data-bg="gradient6" style="background: linear-gradient(135deg, #fda4af 0%, #c084fc 100%);">
-                            <span>Коралловый</span>
+                        <div class="bg-option" data-bg="gradient6" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);">
+                            <span>Пламя</span>
                         </div>
                     </div>
                 </div>
@@ -58,17 +58,17 @@
                 <div class="bg-option-group">
                     <h4><i class="fas fa-square-full"></i> Сплошные цвета</h4>
                     <div class="bg-options-grid">
-                        <div class="bg-option" data-bg="color1" style="background: #1f1b2e;">
-                            <span>Тёмно-фиолетовый</span>
+                        <div class="bg-option" data-bg="color1" style="background: #121212;">
+                            <span>Чёрный</span>
                         </div>
-                        <div class="bg-option" data-bg="color2" style="background: #2a1b3e;">
-                            <span>Баклажановый</span>
+                        <div class="bg-option" data-bg="color2" style="background: #1a1a2e;">
+                            <span>Тёмно-синий</span>
                         </div>
-                        <div class="bg-option" data-bg="color3" style="background: #3a1b4e;">
-                            <span>Фиолетовый</span>
+                        <div class="bg-option" data-bg="color3" style="background: #2d2424;">
+                            <span>Коричневый</span>
                         </div>
-                        <div class="bg-option" data-bg="color4" style="background: #4a1b5e;">
-                            <span>Пурпурный</span>
+                        <div class="bg-option" data-bg="color4" style="background: #1e2a2e;">
+                            <span>Тёмно-зелёный</span>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                 <div class="bg-option-group">
                     <h4><i class="fas fa-eyedropper"></i> Выбор цвета</h4>
                     <div class="color-picker">
-                        <input type="color" id="colorPicker" value="#1f1b2e">
+                        <input type="color" id="colorPicker" value="#1a1a2e">
                         <button class="apply-color-button" id="applyColor">Применить цвет</button>
                     </div>
                 </div>
@@ -106,6 +106,36 @@
                         <i class="fas fa-info-circle"></i> Текущий фон: <span id="currentBgName">Стандартный</span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" data-tab="all">
+                    <i class="fas fa-film"></i> Все аниме
+                    <span class="tab-badge" id="tabAllCount">0</span>
+                </button>
+                <button class="tab" data-tab="tv">
+                    <i class="fas fa-tv"></i> TV Сериалы
+                    <span class="tab-badge" id="tabTvCount">0</span>
+                </button>
+                <button class="tab" data-tab="movie">
+                    <i class="fas fa-video"></i> Фильмы
+                    <span class="tab-badge" id="tabMovieCount">0</span>
+                </button>
+                <button class="tab" data-tab="ova">
+                    <i class="fas fa-compact-disc"></i> OVA
+                    <span class="tab-badge" id="tabOvaCount">0</span>
+                </button>
+                <button class="tab" data-tab="ona">
+                    <i class="fas fa-globe"></i> ONA
+                    <span class="tab-badge" id="tabOnaCount">0</span>
+                </button>
+                <button class="tab" data-tab="special">
+                    <i class="fas fa-star"></i> Special
+                    <span class="tab-badge" id="tabSpecialCount">0</span>
+                </button>
             </div>
         </div>
 
@@ -152,9 +182,6 @@
         </div>
 
         <div class="footer-actions">
-            <button class="action-button" id="exportData">
-                <i class="fas fa-download"></i> Экспорт данных
-            </button>
             <button class="action-button" onclick="validateDatabase()">
                 <i class="fas fa-check-circle"></i> Проверить данные
             </button>
