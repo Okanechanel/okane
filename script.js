@@ -1,20 +1,20 @@
 // ==============================
-// СИСТЕМА УПРАВЛЕНИЯ ФОНОМ
+// СИСТЕМА УПРАВЛЕНИЯ ФОНОМ (ИСПРАВЛЕННАЯ)
 // ==============================
 
 class BackgroundManager {
     constructor() {
-        this.currentBackground = this.getSavedBackground();
+        this.currentBackground = null;
         this.selectedImage = null;
         this.init();
     }
 
     // Получение сохранённого фона из localStorage
     getSavedBackground() {
-        const saved = localStorage.getItem('okaneBackground');
-        if (!saved) return null;
-        
         try {
+            const saved = localStorage.getItem('okaneBackground');
+            if (!saved) return null;
+            
             return JSON.parse(saved);
         } catch (e) {
             console.error('Ошибка загрузки фона:', e);
@@ -24,81 +24,117 @@ class BackgroundManager {
 
     // Сохранение фона в localStorage
     saveBackground(type, value, name) {
-        const background = { type, value, name, timestamp: new Date().toISOString() };
-        localStorage.setItem('okaneBackground', JSON.stringify(background));
-        this.currentBackground = background;
-    }
-
-    // Применение фона
-    applyBackground(type, value) {
-        const body = document.body;
-        
-        switch(type) {
-            case 'gradient':
-                body.style.background = value;
-                body.style.backgroundImage = 'none';
-                break;
-                
-            case 'color':
-                body.style.background = value;
-                body.style.backgroundImage = 'none';
-                break;
-                
-            case 'image':
-                body.style.backgroundImage = `url('${value}')`;
-                body.style.backgroundSize = 'cover';
-                body.style.backgroundPosition = 'center';
-                body.style.backgroundAttachment = 'fixed';
-                body.style.background = 'none';
-                break;
-                
-            default:
-                // Стандартный градиент
-                body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
-                body.style.backgroundImage = 'none';
+        try {
+            const background = { 
+                type, 
+                value, 
+                name, 
+                timestamp: new Date().toISOString() 
+            };
+            
+            localStorage.setItem('okaneBackground', JSON.stringify(background));
+            this.currentBackground = background;
+            console.log('Фон сохранён:', name);
+        } catch (e) {
+            console.error('Ошибка сохранения фона:', e);
         }
     }
 
-    // Инициализация
+    // Применение фона (ИСПРАВЛЕННАЯ ФУНКЦИЯ)
+    applyBackground(type, value) {
+        const body = document.body;
+        
+        try {
+            switch(type) {
+                case 'gradient':
+                    body.style.backgroundImage = 'none';
+                    body.style.background = value;
+                    break;
+                    
+                case 'color':
+                    body.style.backgroundImage = 'none';
+                    body.style.background = value;
+                    break;
+                    
+                case 'image':
+                    body.style.background = 'none';
+                    body.style.backgroundImage = `url('${value}')`;
+                    body.style.backgroundSize = 'cover';
+                    body.style.backgroundPosition = 'center';
+                    body.style.backgroundAttachment = 'fixed';
+                    break;
+                    
+                default:
+                    // Стандартный градиент (розово-фиолетовый)
+                    body.style.backgroundImage = 'none';
+                    body.style.background = 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)';
+            }
+            
+            console.log('Фон применён:', type);
+        } catch (e) {
+            console.error('Ошибка применения фона:', e);
+        }
+    }
+
+    // Инициализация (ИСПРАВЛЕНА ПОСЛЕДОВАТЕЛЬНОСТЬ)
     init() {
-        // Применяем сохранённый фон при загрузке
+        // Сначала получаем сохранённый фон
+        this.currentBackground = this.getSavedBackground();
+        
+        // ПРИМЕНЯЕМ фон ДО настройки обработчиков
         if (this.currentBackground) {
+            console.log('Загружен сохранённый фон:', this.currentBackground);
             this.applyBackground(
                 this.currentBackground.type, 
                 this.currentBackground.value
             );
             this.updateCurrentBgName(this.currentBackground.name);
+        } else {
+            // Применяем стандартный фон
+            this.applyBackground('default', '');
+            this.updateCurrentBgName('Стандартный');
         }
         
+        // Теперь настраиваем обработчики
         this.setupEventListeners();
     }
 
-    // Настройка обработчиков событий
+    // Настройка обработчиков событий (ИСПРАВЛЕНА)
     setupEventListeners() {
+        console.log('Настройка обработчиков фона...');
+        
         // Кнопка открытия/закрытия панели
-        document.getElementById('settingsButton').addEventListener('click', () => {
-            document.getElementById('settingsPanel').classList.toggle('active');
-        });
-
-        document.getElementById('closeSettings').addEventListener('click', () => {
-            document.getElementById('settingsPanel').classList.remove('active');
-        });
+        const settingsButton = document.getElementById('settingsButton');
+        const closeSettings = document.getElementById('closeSettings');
+        const settingsPanel = document.getElementById('settingsPanel');
+        
+        if (settingsButton && settingsPanel) {
+            settingsButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                settingsPanel.classList.toggle('active');
+            });
+        }
+        
+        if (closeSettings && settingsPanel) {
+            closeSettings.addEventListener('click', () => {
+                settingsPanel.classList.remove('active');
+            });
+        }
 
         // Закрытие при клике вне панели
         document.addEventListener('click', (e) => {
-            const panel = document.getElementById('settingsPanel');
-            const button = document.getElementById('settingsButton');
-            
-            if (panel.classList.contains('active') && 
-                !panel.contains(e.target) && 
-                !button.contains(e.target)) {
-                panel.classList.remove('active');
+            if (settingsPanel && settingsPanel.classList.contains('active') && 
+                !settingsPanel.contains(e.target) && 
+                !settingsButton.contains(e.target)) {
+                settingsPanel.classList.remove('active');
             }
         });
 
-        // Предустановленные градиенты
+        // Градиенты
         document.querySelectorAll('.bg-option[data-bg^="gradient"]').forEach(option => {
-            option.addEventListener('click', () => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
                 // Убираем активный класс у всех
                 document.querySelectorAll('.bg-option').forEach(opt => {
                     opt.classList.remove('active');
@@ -112,23 +148,27 @@ class BackgroundManager {
                 
                 // Определяем градиент по ID
                 const gradients = {
-                    gradient1: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                    gradient2: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-                    gradient3: 'linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%)',
-                    gradient4: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                    gradient5: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-                    gradient6: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)'
+                    gradient1: 'linear-gradient(135deg, #ff6bcb 0%, #8b5cf6 100%)',
+                    gradient2: 'linear-gradient(135deg, #ec4899 0%, #7c3aed 100%)',
+                    gradient3: 'linear-gradient(135deg, #f472b6 0%, #d946ef 50%, #a855f7 100%)',
+                    gradient4: 'linear-gradient(135deg, #f9a8d4 0%, #e879f9 100%)',
+                    gradient5: 'linear-gradient(135deg, #be185d 0%, #7e22ce 100%)',
+                    gradient6: 'linear-gradient(135deg, #fda4af 0%, #c084fc 100%)'
                 };
                 
-                this.applyBackground('gradient', gradients[bgId]);
-                this.saveBackground('gradient', gradients[bgId], `Градиент: ${bgName}`);
-                this.updateCurrentBgName(`Градиент: ${bgName}`);
+                if (gradients[bgId]) {
+                    this.applyBackground('gradient', gradients[bgId]);
+                    this.saveBackground('gradient', gradients[bgId], `Градиент: ${bgName}`);
+                    this.updateCurrentBgName(`Градиент: ${bgName}`);
+                }
             });
         });
 
         // Сплошные цвета
         document.querySelectorAll('.bg-option[data-bg^="color"]').forEach(option => {
-            option.addEventListener('click', () => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
                 document.querySelectorAll('.bg-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
@@ -148,89 +188,165 @@ class BackgroundManager {
         const imagePreview = document.getElementById('imagePreview');
         const applyImageButton = document.getElementById('applyImage');
         
-        imageUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            if (!file.type.startsWith('image/')) {
-                alert('Пожалуйста, выберите файл изображения');
-                return;
-            }
-            
-            if (file.size > 5 * 1024 * 1024) { // 5MB
-                alert('Изображение слишком большое. Максимальный размер: 5MB');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.selectedImage = e.target.result;
-                imagePreview.innerHTML = `<img src="${this.selectedImage}" alt="Предпросмотр">`;
-                applyImageButton.disabled = false;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Применение изображения
-        applyImageButton.addEventListener('click', () => {
-            if (!this.selectedImage) {
-                alert('Сначала выберите изображение');
-                return;
-            }
-            
-            this.applyBackground('image', this.selectedImage);
-            this.saveBackground('image', this.selectedImage, 'Пользовательское изображение');
-            this.updateCurrentBgName('Пользовательское изображение');
-            
-            // Деактивируем другие варианты
-            document.querySelectorAll('.bg-option').forEach(opt => {
-                opt.classList.remove('active');
+        if (imageUpload && applyImageButton) {
+            imageUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!file.type.startsWith('image/')) {
+                    alert('Пожалуйста, выберите файл изображения');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Изображение слишком большое. Максимальный размер: 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.selectedImage = e.target.result;
+                    imagePreview.innerHTML = `<img src="${this.selectedImage}" alt="Предпросмотр">`;
+                    applyImageButton.disabled = false;
+                };
+                reader.readAsDataURL(file);
             });
-        });
+
+            applyImageButton.addEventListener('click', () => {
+                if (!this.selectedImage) {
+                    alert('Сначала выберите изображение');
+                    return;
+                }
+                
+                this.applyBackground('image', this.selectedImage);
+                this.saveBackground('image', this.selectedImage, 'Пользовательское изображение');
+                this.updateCurrentBgName('Пользовательское изображение');
+                
+                // Деактивируем другие варианты
+                document.querySelectorAll('.bg-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+            });
+        }
 
         // Выбор цвета из палитры
-        document.getElementById('applyColor').addEventListener('click', () => {
-            const color = document.getElementById('colorPicker').value;
-            
-            this.applyBackground('color', color);
-            this.saveBackground('color', color, `Выбранный цвет: ${color}`);
-            this.updateCurrentBgName(`Выбранный цвет: ${color}`);
-            
-            // Деактивируем другие варианты
-            document.querySelectorAll('.bg-option').forEach(opt => {
-                opt.classList.remove('active');
+        const applyColorButton = document.getElementById('applyColor');
+        if (applyColorButton) {
+            applyColorButton.addEventListener('click', () => {
+                const color = document.getElementById('colorPicker').value;
+                
+                this.applyBackground('color', color);
+                this.saveBackground('color', color, `Выбранный цвет: ${color}`);
+                this.updateCurrentBgName(`Выбранный цвет: ${color}`);
+                
+                // Деактивируем другие варианты
+                document.querySelectorAll('.bg-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
             });
-        });
+        }
 
         // Сброс фона
-        document.getElementById('resetBackground').addEventListener('click', () => {
-            this.applyBackground('default', '');
-            localStorage.removeItem('okaneBackground');
-            this.currentBackground = null;
-            this.updateCurrentBgName('Стандартный');
-            
-            // Деактивируем все варианты
-            document.querySelectorAll('.bg-option').forEach(opt => {
-                opt.classList.remove('active');
+        const resetButton = document.getElementById('resetBackground');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                this.applyBackground('default', '');
+                localStorage.removeItem('okaneBackground');
+                this.currentBackground = null;
+                this.selectedImage = null;
+                this.updateCurrentBgName('Стандартный');
+                
+                // Деактивируем все варианты
+                document.querySelectorAll('.bg-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Сбрасываем превью изображения
+                if (imagePreview) {
+                    imagePreview.innerHTML = '<p>Изображение не выбрано</p>';
+                }
+                if (imageUpload) {
+                    imageUpload.value = '';
+                }
+                if (applyImageButton) {
+                    applyImageButton.disabled = true;
+                }
+                
+                console.log('Фон сброшен к стандартному');
             });
-            
-            // Сбрасываем превью изображения
-            document.getElementById('imagePreview').innerHTML = '<p>Изображение не выбрано</p>';
-            document.getElementById('imageUpload').value = '';
-            this.selectedImage = null;
-            applyImageButton.disabled = true;
-        });
+        }
+
+        // Кнопка экспорта данных
+        const exportButton = document.getElementById('exportData');
+        if (exportButton) {
+            exportButton.addEventListener('click', () => {
+                exportDatabase();
+            });
+        }
+        
+        console.log('Обработчики фона настроены');
     }
 
     // Обновление информации о текущем фоне
     updateCurrentBgName(name) {
-        document.getElementById('currentBgName').textContent = name;
+        const element = document.getElementById('currentBgName');
+        if (element) {
+            element.textContent = name;
+        }
     }
 }
 
 // ==============================
-// БАЗА ДАННЫХ АНИМЕ
-// Добавлено поле link для ссылок в названиях
+// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+// (УПРОЩЕННАЯ И ИСПРАВЛЕННАЯ)
+// ==============================
+
+// Глобальная переменная для менеджера фонов
+let backgroundManager = null;
+
+// Основная функция инициализации
+function initApp() {
+    console.log('Инициализация приложения...');
+    
+    // 1. Сначала инициализируем менеджер фонов
+    backgroundManager = new BackgroundManager();
+    window.backgroundManager = backgroundManager;
+    
+    // 2. Затем заполняем фильтр жанров
+    populateGenreFilter();
+    
+    // 3. Обновляем статистику
+    updateStats();
+    
+    // 4. Рендерим все аниме
+    renderAnimeGrid();
+    
+    // 5. Настраиваем обработчики событий
+    setupAppEventListeners();
+    
+    console.log('✅ Приложение инициализировано');
+}
+
+// Настройка обработчиков событий приложения
+function setupAppEventListeners() {
+    // Поиск и фильтрация
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', filterAnime);
+    }
+    
+    if (genreFilter) {
+        genreFilter.addEventListener('change', filterAnime);
+    }
+}
+
+// Запуск приложения при полной загрузке страницы
+document.addEventListener('DOMContentLoaded', initApp);
+
+// ==============================
+// БАЗА ДАННЫХ АНИМЕ (с примерами ссылок)
 // ==============================
 
 const animeDatabase = [
@@ -244,7 +360,7 @@ const animeDatabase = [
         studio: "Studio Colorido",
         voiceActors: ["Анна Кириллова", "Михаил Светлов", "Елена Громова"],
         genres: ["Приключения", "Фэнтези", "Драма"],
-        link: "" // <-- ПУСТАЯ СТРОКА ДЛЯ ССЫЛКИ
+        link: "https://shikimori.one/animes" // Пример ссылки
     },
     {
         id: 2,
@@ -256,7 +372,7 @@ const animeDatabase = [
         studio: "WIT Studio",
         voiceActors: ["Дмитрий Петров", "Ольга Сидорова", "Иван Новиков", "Татьяна Морозова"],
         genres: ["Боевик", "Исторический", "Сверхъестественное"],
-        link: "" // <-- ПУСТАЯ СТРОКА ДЛЯ ССЫЛКИ
+        link: "" // Пустая строка для ссылки
     },
     {
         id: 3,
@@ -268,7 +384,7 @@ const animeDatabase = [
         studio: "Trigger",
         voiceActors: ["Сергей Иванов", "Мария Ковалёва", "Алексей Смирнов"],
         genres: ["Фантастика", "Меха", "Приключения"],
-        link: "" // <-- ПУСТАЯ СТРОКА ДЛЯ ССЫЛКИ
+        link: "" // Пустая строка для ссылки
     },
     {
         id: 4,
@@ -280,7 +396,7 @@ const animeDatabase = [
         studio: "Kyoto Animation",
         voiceActors: ["Екатерина Волкова", "Артём Белов", "Надежда Соколова"],
         genres: ["Повседневность", "Драма", "Мистика"],
-        link: "" // <-- ПУСТАЯ СТРОКА ДЛЯ ССЫЛКИ
+        link: "" // Пустая строка для ссылки
     },
     {
         id: 5,
@@ -292,7 +408,7 @@ const animeDatabase = [
         studio: "Bones",
         voiceActors: ["Александр Новиков", "Юлия Лебедева", "Павел Громов", "Ирина Ветрова"],
         genres: ["Фэнтези", "Боевик", "Драма"],
-        link: "" // <-- ПУСТАЯ СТРОКА ДЛЯ ССЫЛКИ
+        link: "" // Пустая строка для ссылки
     },
     {
         id: 6,
@@ -304,16 +420,14 @@ const animeDatabase = [
         studio: "P.A. Works",
         voiceActors: ["Светлана Кузнецова", "Денис Попов", "Анна Медведева", "Максим Орлов"],
         genres: ["Музыкальный", "Школа", "Драма"],
-        link: "" // <-- ПУСТАЯ СТРОКА ДЛЯ ССЫЛКИ
+        link: "" // Пустая строка для ссылки
     }
 ];
 
 // ==============================
-// ФУНКЦИИ РЕНДЕРИНГА
-// Обновлено для поддержки ссылок в названиях
+// ФУНКЦИИ РЕНДЕРИНГА (без изменений)
 // ==============================
 
-// Получение всех уникальных жанров
 function getAllGenres() {
     const genres = new Set();
     animeDatabase.forEach(anime => {
@@ -322,10 +436,12 @@ function getAllGenres() {
     return Array.from(genres).sort();
 }
 
-// Заполнение фильтра жанров
 function populateGenreFilter() {
     const genreFilter = document.getElementById('genreFilter');
+    if (!genreFilter) return;
+    
     const genres = getAllGenres();
+    genreFilter.innerHTML = '<option value="">Все жанры</option>';
     
     genres.forEach(genre => {
         const option = document.createElement('option');
@@ -335,42 +451,42 @@ function populateGenreFilter() {
     });
 }
 
-// Обновление статистики
 function updateStats() {
     const totalAnime = animeDatabase.length;
     const uniqueGenres = getAllGenres().length;
     const totalEpisodes = animeDatabase.reduce((sum, anime) => sum + (anime.episodes || 0), 0);
     
-    document.getElementById('totalAnime').textContent = totalAnime;
-    document.getElementById('uniqueGenres').textContent = uniqueGenres;
-    document.getElementById('totalEpisodes').textContent = totalEpisodes;
+    const totalAnimeEl = document.getElementById('totalAnime');
+    const uniqueGenresEl = document.getElementById('uniqueGenres');
+    const totalEpisodesEl = document.getElementById('totalEpisodes');
     
-    // Дата последнего обновления
+    if (totalAnimeEl) totalAnimeEl.textContent = totalAnime;
+    if (uniqueGenresEl) uniqueGenresEl.textContent = uniqueGenres;
+    if (totalEpisodesEl) totalEpisodesEl.textContent = totalEpisodes;
+    
     const now = new Date();
-    document.getElementById('lastUpdate').textContent = 
-        `${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}`;
+    const lastUpdateEl = document.getElementById('lastUpdate');
+    if (lastUpdateEl) {
+        lastUpdateEl.textContent = 
+            `${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}`;
+    }
 }
 
-// Создание карточки аниме (с поддержкой ссылок)
 function createAnimeCard(anime) {
     const card = document.createElement('div');
     card.className = 'anime-card';
     card.dataset.id = anime.id;
     
-    // Проверяем, есть ли ссылка
     const hasLink = anime.link && anime.link.trim() !== '';
     
-    // Формируем HTML для названия
     let titleHTML = '';
     if (hasLink) {
-        // Если есть ссылка - делаем кликабельную ссылку
         titleHTML = `
             <a href="${anime.link}" target="_blank" class="anime-title-link">
                 ${anime.title} <i class="fas fa-external-link-alt link-icon"></i>
             </a>
         `;
     } else {
-        // Если нет ссылки - обычный заголовок
         titleHTML = `<h3 class="anime-title">${anime.title}</h3>`;
     }
     
@@ -406,7 +522,7 @@ function createAnimeCard(anime) {
             </div>
             
             <div class="voice-actors">
-                <h4 class="voice-title">Актёры озвучки:</h4>
+                <h4 class="voice-title"><i class="fas fa-microphone"></i> Актёры озвучки:</h4>
                 <div class="actors-list">
                     ${anime.voiceActors.map(actor => `<span class="actor-tag">${actor}</span>`).join('')}
                 </div>
@@ -417,15 +533,16 @@ function createAnimeCard(anime) {
     return card;
 }
 
-// Рендеринг всех аниме
 function renderAnimeGrid(filteredAnime = animeDatabase) {
     const grid = document.getElementById('animeGrid');
+    if (!grid) return;
+    
     grid.innerHTML = '';
     
     if (filteredAnime.length === 0) {
         grid.innerHTML = `
             <div class="no-results">
-                <h3>Ничего не найдено</h3>
+                <h3><i class="fas fa-search"></i> Ничего не найдено</h3>
                 <p>Попробуйте изменить поисковый запрос или выберите другой жанр</p>
             </div>
         `;
@@ -437,10 +554,14 @@ function renderAnimeGrid(filteredAnime = animeDatabase) {
     });
 }
 
-// Фильтрация аниме
 function filterAnime() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const selectedGenre = document.getElementById('genreFilter').value;
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    
+    if (!searchInput || !genreFilter) return;
+    
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedGenre = genreFilter.value;
     
     const filtered = animeDatabase.filter(anime => {
         const matchesSearch = 
@@ -455,115 +576,16 @@ function filterAnime() {
     
     renderAnimeGrid(filtered);
     
-    // Обновляем статистику с учётом фильтров
-    document.getElementById('totalAnime').textContent = filtered.length;
+    const totalAnimeEl = document.getElementById('totalAnime');
+    if (totalAnimeEl) {
+        totalAnimeEl.textContent = filtered.length;
+    }
 }
 
 // ==============================
-// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 // ==============================
 
-function initApp() {
-    // Инициализация менеджера фона
-    window.backgroundManager = new BackgroundManager();
-    
-    // Заполняем фильтр жанров
-    populateGenreFilter();
-    
-    // Обновляем статистику
-    updateStats();
-    
-    // Рендерим все аниме
-    renderAnimeGrid();
-    
-    // Настраиваем обработчики событий
-    document.getElementById('searchInput').addEventListener('input', filterAnime);
-    document.getElementById('genreFilter').addEventListener('change', filterAnime);
-    
-    // Сохраняем в localStorage для целостности (если нужно)
-    localStorage.setItem('animeDatabase', JSON.stringify(animeDatabase));
-    
-    console.log('✅ Каталог аниме инициализирован. Всего записей:', animeDatabase.length);
-    console.log('📝 Для изменения данных редактируйте массив animeDatabase в файле script.js');
-    console.log('🔗 Чтобы добавить ссылку, заполните поле "link" в объекте аниме');
-}
-
-// Запуск приложения при загрузке страницы
-document.addEventListener('DOMContentLoaded', initApp);
-
-// ==============================
-// ДОБАВЛЕННЫЕ СТИЛИ ДЛЯ ССЫЛОК В CSS
-// ==============================
-
-// Добавьте эти стили в конец файла styles.css
-
-const linkStyles = `
-.anime-title-link {
-    color: #4cc9f0;
-    text-decoration: none;
-    font-size: 1.4rem;
-    font-weight: 600;
-    display: inline-block;
-    transition: all 0.3s ease;
-    border-bottom: 2px solid transparent;
-    margin-bottom: 8px;
-    line-height: 1.3;
-}
-
-.anime-title-link:hover {
-    color: #f72585;
-    border-bottom-color: #f72585;
-    transform: translateY(-2px);
-}
-
-.anime-title-link:active {
-    transform: translateY(0);
-}
-
-.link-icon {
-    font-size: 0.9rem;
-    margin-left: 5px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.anime-title-link:hover .link-icon {
-    opacity: 1;
-}
-
-.no-results {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    background: rgba(30, 41, 59, 0.7);
-    border-radius: 18px;
-    border: 2px dashed #334155;
-}
-
-.no-results h3 {
-    color: #f8fafc;
-    margin-bottom: 15px;
-    font-size: 1.8rem;
-}
-
-.no-results p {
-    color: #94a3b8;
-    font-size: 1.1rem;
-}
-`;
-
-// Вставка стилей в страницу
-document.addEventListener('DOMContentLoaded', function() {
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = linkStyles;
-    document.head.appendChild(styleSheet);
-});
-
-// ==============================
-// ФУНКЦИИ ДЛЯ РАЗРАБОТЧИКОВ
-// ==============================
-
-// Экспорт данных в JSON (для скачивания)
 function exportDatabase() {
     const dataStr = JSON.stringify(animeDatabase, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
@@ -576,16 +598,13 @@ function exportDatabase() {
     linkElement.click();
 }
 
-// Импорт данных из JSON (осторожно - перезаписывает!)
 function importDatabase(jsonData) {
     try {
         const newData = JSON.parse(jsonData);
         if (Array.isArray(newData)) {
-            // В реальном приложении здесь была бы проверка структуры
             animeDatabase.length = 0;
             animeDatabase.push(...newData);
             
-            // Перерисовываем интерфейс
             populateGenreFilter();
             updateStats();
             renderAnimeGrid();
@@ -599,27 +618,23 @@ function importDatabase(jsonData) {
     return false;
 }
 
-// Автогенерация ID для новых записей
 function getNextId() {
     return animeDatabase.length > 0 
         ? Math.max(...animeDatabase.map(item => item.id)) + 1 
         : 1;
 }
 
-// Проверка целостности данных (обновлена для ссылок)
 function validateDatabase() {
     const requiredFields = ['title', 'description', 'year', 'studio'];
     const errors = [];
     
     animeDatabase.forEach((anime, index) => {
-        // Проверка обязательных полей
         requiredFields.forEach(field => {
             if (!anime[field]) {
                 errors.push(`Запись #${index + 1} (ID: ${anime.id}): отсутствует поле "${field}"`);
             }
         });
         
-        // Проверка типов данных
         if (typeof anime.year !== 'number') {
             errors.push(`Запись #${index + 1}: год должен быть числом`);
         }
@@ -632,7 +647,6 @@ function validateDatabase() {
             errors.push(`Запись #${index + 1}: должен быть хотя бы один актёр озвучки`);
         }
         
-        // Проверка ссылки (если есть)
         if (anime.link && anime.link.trim() !== '') {
             try {
                 new URL(anime.link);
@@ -643,15 +657,16 @@ function validateDatabase() {
     });
     
     if (errors.length === 0) {
+        alert('✅ Все данные корректны!');
         console.log('✅ Структура данных валидна');
         return true;
     } else {
-        console.error('❌ Обнаружены ошибки в данных:', errors);
+        alert('❌ Обнаружены ошибки в данных. Проверьте консоль.');
+        console.error('❌ Ошибки в данных:', errors);
         return false;
     }
 }
 
-// Функция для добавления ссылки к существующему аниме
 function addLinkToAnime(animeId, url) {
     const anime = animeDatabase.find(a => a.id === animeId);
     if (!anime) {
@@ -660,13 +675,12 @@ function addLinkToAnime(animeId, url) {
     }
     
     try {
-        // Проверяем, валидна ли ссылка
         if (url && url.trim() !== '') {
             new URL(url);
         }
         
         anime.link = url;
-        renderAnimeGrid(); // Перерисовываем сетку
+        renderAnimeGrid();
         console.log(`✅ Ссылка добавлена к аниме "${anime.title}"`);
         return true;
     } catch (e) {
@@ -675,8 +689,8 @@ function addLinkToAnime(animeId, url) {
     }
 }
 
-// Пример использования функции addLinkToAnime:
-// addLinkToAnime(1, "https://example.com/anime/sora-no-tabi");
-
-// Выполняем валидацию при запуске
-setTimeout(validateDatabase, 1000);
+// Автоматическая проверка при загрузке
+setTimeout(() => {
+    console.log('Проверка целостности данных...');
+    validateDatabase();
+}, 2000);
