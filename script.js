@@ -1,5 +1,5 @@
 // ==============================
-// СИСТЕМА УПРАВЛЕНИЯ ФОНОМ (ИСПРАВЛЕННАЯ)
+// СИСТЕМА УПРАВЛЕНИЯ ФОНОМ (с старыми градиентами)
 // ==============================
 
 class BackgroundManager {
@@ -9,12 +9,10 @@ class BackgroundManager {
         this.init();
     }
 
-    // Получение сохранённого фона из localStorage
     getSavedBackground() {
         try {
             const saved = localStorage.getItem('okaneBackground');
             if (!saved) return null;
-            
             return JSON.parse(saved);
         } catch (e) {
             console.error('Ошибка загрузки фона:', e);
@@ -22,7 +20,6 @@ class BackgroundManager {
         }
     }
 
-    // Сохранение фона в localStorage
     saveBackground(type, value, name) {
         try {
             const background = { 
@@ -31,7 +28,6 @@ class BackgroundManager {
                 name, 
                 timestamp: new Date().toISOString() 
             };
-            
             localStorage.setItem('okaneBackground', JSON.stringify(background));
             this.currentBackground = background;
             console.log('Фон сохранён:', name);
@@ -40,7 +36,6 @@ class BackgroundManager {
         }
     }
 
-    // Применение фона (ИСПРАВЛЕННАЯ ФУНКЦИЯ)
     applyBackground(type, value) {
         const body = document.body;
         
@@ -65,45 +60,32 @@ class BackgroundManager {
                     break;
                     
                 default:
-                    // Стандартный градиент (розово-фиолетовый)
                     body.style.backgroundImage = 'none';
-                    body.style.background = 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)';
+                    body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
             }
-            
-            console.log('Фон применён:', type);
         } catch (e) {
             console.error('Ошибка применения фона:', e);
         }
     }
 
-    // Инициализация (ИСПРАВЛЕНА ПОСЛЕДОВАТЕЛЬНОСТЬ)
     init() {
-        // Сначала получаем сохранённый фон
         this.currentBackground = this.getSavedBackground();
         
-        // ПРИМЕНЯЕМ фон ДО настройки обработчиков
         if (this.currentBackground) {
-            console.log('Загружен сохранённый фон:', this.currentBackground);
             this.applyBackground(
                 this.currentBackground.type, 
                 this.currentBackground.value
             );
             this.updateCurrentBgName(this.currentBackground.name);
         } else {
-            // Применяем стандартный фон
             this.applyBackground('default', '');
             this.updateCurrentBgName('Стандартный');
         }
         
-        // Теперь настраиваем обработчики
         this.setupEventListeners();
     }
 
-    // Настройка обработчиков событий (ИСПРАВЛЕНА)
     setupEventListeners() {
-        console.log('Настройка обработчиков фона...');
-        
-        // Кнопка открытия/закрытия панели
         const settingsButton = document.getElementById('settingsButton');
         const closeSettings = document.getElementById('closeSettings');
         const settingsPanel = document.getElementById('settingsPanel');
@@ -121,7 +103,6 @@ class BackgroundManager {
             });
         }
 
-        // Закрытие при клике вне панели
         document.addEventListener('click', (e) => {
             if (settingsPanel && settingsPanel.classList.contains('active') && 
                 !settingsPanel.contains(e.target) && 
@@ -130,30 +111,26 @@ class BackgroundManager {
             }
         });
 
-        // Градиенты
+        // Градиенты (старые варианты)
         document.querySelectorAll('.bg-option[data-bg^="gradient"]').forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Убираем активный класс у всех
                 document.querySelectorAll('.bg-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
                 
-                // Добавляем активный класс выбранному
                 option.classList.add('active');
-                
                 const bgId = option.dataset.bg;
                 const bgName = option.querySelector('span').textContent;
                 
-                // Определяем градиент по ID
                 const gradients = {
-                    gradient1: 'linear-gradient(135deg, #ff6bcb 0%, #8b5cf6 100%)',
-                    gradient2: 'linear-gradient(135deg, #ec4899 0%, #7c3aed 100%)',
-                    gradient3: 'linear-gradient(135deg, #f472b6 0%, #d946ef 50%, #a855f7 100%)',
-                    gradient4: 'linear-gradient(135deg, #f9a8d4 0%, #e879f9 100%)',
-                    gradient5: 'linear-gradient(135deg, #be185d 0%, #7e22ce 100%)',
-                    gradient6: 'linear-gradient(135deg, #fda4af 0%, #c084fc 100%)'
+                    gradient1: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                    gradient2: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+                    gradient3: 'linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%)',
+                    gradient4: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                    gradient5: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                    gradient6: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)'
                 };
                 
                 if (gradients[bgId]) {
@@ -222,7 +199,6 @@ class BackgroundManager {
                 this.saveBackground('image', this.selectedImage, 'Пользовательское изображение');
                 this.updateCurrentBgName('Пользовательское изображение');
                 
-                // Деактивируем другие варианты
                 document.querySelectorAll('.bg-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
@@ -239,7 +215,6 @@ class BackgroundManager {
                 this.saveBackground('color', color, `Выбранный цвет: ${color}`);
                 this.updateCurrentBgName(`Выбранный цвет: ${color}`);
                 
-                // Деактивируем другие варианты
                 document.querySelectorAll('.bg-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
@@ -256,97 +231,27 @@ class BackgroundManager {
                 this.selectedImage = null;
                 this.updateCurrentBgName('Стандартный');
                 
-                // Деактивируем все варианты
                 document.querySelectorAll('.bg-option').forEach(opt => {
                     opt.classList.remove('active');
                 });
                 
-                // Сбрасываем превью изображения
-                if (imagePreview) {
-                    imagePreview.innerHTML = '<p>Изображение не выбрано</p>';
-                }
-                if (imageUpload) {
-                    imageUpload.value = '';
-                }
-                if (applyImageButton) {
-                    applyImageButton.disabled = true;
-                }
-                
-                console.log('Фон сброшен к стандартному');
+                if (imagePreview) imagePreview.innerHTML = '<p>Изображение не выбрано</p>';
+                if (imageUpload) imageUpload.value = '';
+                if (applyImageButton) applyImageButton.disabled = true;
             });
         }
-
-        // Кнопка экспорта данных
-        const exportButton = document.getElementById('exportData');
-        if (exportButton) {
-            exportButton.addEventListener('click', () => {
-                exportDatabase();
-            });
-        }
-        
-        console.log('Обработчики фона настроены');
     }
 
-    // Обновление информации о текущем фоне
     updateCurrentBgName(name) {
         const element = document.getElementById('currentBgName');
-        if (element) {
-            element.textContent = name;
-        }
+        if (element) element.textContent = name;
     }
 }
 
 // ==============================
-// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
-// (УПРОЩЕННАЯ И ИСПРАВЛЕННАЯ)
-// ==============================
-
-// Глобальная переменная для менеджера фонов
-let backgroundManager = null;
-
-// Основная функция инициализации
-function initApp() {
-    console.log('Инициализация приложения...');
-    
-    // 1. Сначала инициализируем менеджер фонов
-    backgroundManager = new BackgroundManager();
-    window.backgroundManager = backgroundManager;
-    
-    // 2. Затем заполняем фильтр жанров
-    populateGenreFilter();
-    
-    // 3. Обновляем статистику
-    updateStats();
-    
-    // 4. Рендерим все аниме
-    renderAnimeGrid();
-    
-    // 5. Настраиваем обработчики событий
-    setupAppEventListeners();
-    
-    console.log('✅ Приложение инициализировано');
-}
-
-// Настройка обработчиков событий приложения
-function setupAppEventListeners() {
-    // Поиск и фильтрация
-    const searchInput = document.getElementById('searchInput');
-    const genreFilter = document.getElementById('genreFilter');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', filterAnime);
-    }
-    
-    if (genreFilter) {
-        genreFilter.addEventListener('change', filterAnime);
-    }
-}
-
-// Запуск приложения при полной загрузке страницы
-document.addEventListener('DOMContentLoaded', initApp);
-
-// ==============================
-// БАЗА ДАННЫХ АНИМЕ (с примерами ссылок)
+// БАЗА ДАННЫХ АНИМЕ
+// Добавлены типы: tv, movie, ova, ona, special
+// Добавлено поле image для превью
 // ==============================
 
 const animeDatabase = [
@@ -360,7 +265,9 @@ const animeDatabase = [
         studio: "Studio Colorido",
         voiceActors: ["Анна Кириллова", "Михаил Светлов", "Елена Громова"],
         genres: ["Приключения", "Фэнтези", "Драма"],
-        link: "https://shikimori.one/animes" // Пример ссылки
+        type: "tv", // tv, movie, ova, ona, special
+        link: "https://shikimori.one/animes",
+        image: "" // URL изображения для превью
     },
     {
         id: 2,
@@ -372,60 +279,168 @@ const animeDatabase = [
         studio: "WIT Studio",
         voiceActors: ["Дмитрий Петров", "Ольга Сидорова", "Иван Новиков", "Татьяна Морозова"],
         genres: ["Боевик", "Исторический", "Сверхъестественное"],
-        link: "" // Пустая строка для ссылки
+        type: "tv",
+        link: "",
+        image: ""
     },
     {
         id: 3,
-        title: "Механика звёзд",
-        originalTitle: "Hoshi no Kikaika",
-        description: "В далёком будущем человечество обнаруживает, что звёзды являются гигантскими механическими конструкциями, созданными неизвестной цивилизацией.",
+        title: "Механика звёзд: Фильм",
+        originalTitle: "Hoshi no Kikaika Movie",
+        description: "Полнометражный фильм по мотивам сериала. Экипаж космического корабля обнаруживает невероятную тайну происхождения вселенной.",
         year: 2024,
-        episodes: 26,
+        episodes: 1,
         studio: "Trigger",
         voiceActors: ["Сергей Иванов", "Мария Ковалёва", "Алексей Смирнов"],
         genres: ["Фантастика", "Меха", "Приключения"],
-        link: "" // Пустая строка для ссылки
+        type: "movie",
+        link: "",
+        image: ""
     },
     {
         id: 4,
-        title: "Кафе забытых воспоминаний",
-        originalTitle: "Wasureta Kioku no Cafe",
-        description: "В маленьком токийском кафе посетители могут заказать не только кофе, но и временный доступ к воспоминаниям других людей.",
-        year: 2021,
-        episodes: 12,
+        title: "Кафе забытых воспоминаний: OVA",
+        originalTitle: "Wasureta Kioku no Cafe OVA",
+        description: "Особый эпизод, раскрывающий прошлое владельца кафе и происхождение магического кофейного аппарата.",
+        year: 2022,
+        episodes: 2,
         studio: "Kyoto Animation",
         voiceActors: ["Екатерина Волкова", "Артём Белов", "Надежда Соколова"],
         genres: ["Повседневность", "Драма", "Мистика"],
-        link: "" // Пустая строка для ссылки
+        type: "ova",
+        link: "",
+        image: ""
     },
     {
         id: 5,
-        title: "Алый алхимик",
-        originalTitle: "Scarlet Alchemist",
-        description: "В мире, где алхимия подчиняется строгим законам равнозначного обмена, юный гений ищет философский камень, чтобы воскресить погибших родителей.",
+        title: "Алый алхимик: ONA серии",
+        originalTitle: "Scarlet Alchemist Web Series",
+        description: "Эксклюзивный веб-сериал, доступный только через стриминговые сервисы. Показывает альтернативную временную линию.",
         year: 2023,
-        episodes: 22,
+        episodes: 8,
         studio: "Bones",
         voiceActors: ["Александр Новиков", "Юлия Лебедева", "Павел Громов", "Ирина Ветрова"],
         genres: ["Фэнтези", "Боевик", "Драма"],
-        link: "" // Пустая строка для ссылки
+        type: "ona",
+        link: "",
+        image: ""
     },
     {
         id: 6,
-        title: "Ритм океана",
-        originalTitle: "Umi no Rhythm",
-        description: "Группа школьников создаёт музыкальный коллектив, вдохновляясь звуками океана. Их цель — выиграть национальный конкурс молодых исполнителей.",
-        year: 2022,
-        episodes: 18,
+        title: "Ритм океана: Special Episode",
+        originalTitle: "Umi no Rhythm Special",
+        description: "Праздничный спешл-эпизод, выпущенный к годовщине сериала. Герои участвуют в музыкальном фестивале.",
+        year: 2023,
+        episodes: 1,
         studio: "P.A. Works",
         voiceActors: ["Светлана Кузнецова", "Денис Попов", "Анна Медведева", "Максим Орлов"],
         genres: ["Музыкальный", "Школа", "Драма"],
-        link: "" // Пустая строка для ссылки
+        type: "special",
+        link: "",
+        image: ""
+    },
+    {
+        id: 7,
+        title: "Ночной дозор: OVA коллекция",
+        originalTitle: "Night Watch OVA Collection",
+        description: "Сборник из трёх OVA-эпизодов, расширяющих вселенную основного сериала. Каждая история рассказывает о разных персонажах.",
+        year: 2021,
+        episodes: 3,
+        studio: "Madhouse",
+        voiceActors: ["Владимир Антонов", "Елена Смирнова", "Игорь Козлов"],
+        genres: ["Фэнтези", "Боевик", "Детектив"],
+        type: "ova",
+        link: "",
+        image: ""
+    },
+    {
+        id: 8,
+        title: "Виртуальная реальность: ONA проект",
+        originalTitle: "Virtual Reality Project",
+        description: "Инновационный ONA проект, созданный с использованием технологий виртуальной реальности. Каждый эпизод — это отдельное приключение.",
+        year: 2024,
+        episodes: 6,
+        studio: "Science SARU",
+        voiceActors: ["Дмитрий Волков", "Анастасия Петрова"],
+        genres: ["Фантастика", "Приключения", "Психологическое"],
+        type: "ona",
+        link: "",
+        image: ""
+    },
+    {
+        id: 9,
+        title: "Новогодний спешл",
+        originalTitle: "New Year Special",
+        description: "Праздничный спешл-эпизод, выпущенный к Новому году. Герои отмечают праздники и подводят итоги года.",
+        year: 2023,
+        episodes: 1,
+        studio: "P.A. Works",
+        voiceActors: ["Светлана Кузнецова", "Денис Попов"],
+        genres: ["Повседневность", "Комедия"],
+        type: "special",
+        link: "",
+        image: ""
     }
 ];
 
 // ==============================
-// ФУНКЦИИ РЕНДЕРИНГА (без изменений)
+// ФУНКЦИИ ДЛЯ ВКЛАДОК
+// ==============================
+
+let currentTab = 'all';
+let currentFilteredAnime = animeDatabase;
+
+function updateTabCounts() {
+    const counts = {
+        all: animeDatabase.length,
+        tv: animeDatabase.filter(a => a.type === 'tv').length,
+        movie: animeDatabase.filter(a => a.type === 'movie').length,
+        ova: animeDatabase.filter(a => a.type === 'ova').length,
+        ona: animeDatabase.filter(a => a.type === 'ona').length,
+        special: animeDatabase.filter(a => a.type === 'special').length
+    };
+
+    document.getElementById('tabAllCount').textContent = counts.all;
+    document.getElementById('tabTvCount').textContent = counts.tv;
+    document.getElementById('tabMovieCount').textContent = counts.movie;
+    document.getElementById('tabOvaCount').textContent = counts.ova;
+    document.getElementById('tabOnaCount').textContent = counts.ona;
+    document.getElementById('tabSpecialCount').textContent = counts.special;
+}
+
+function filterByTab(tab) {
+    currentTab = tab;
+    
+    if (tab === 'all') {
+        currentFilteredAnime = animeDatabase;
+    } else {
+        currentFilteredAnime = animeDatabase.filter(anime => anime.type === tab);
+    }
+    
+    applyCurrentFilters();
+}
+
+function setupTabs() {
+    const tabs = document.querySelectorAll('.tab');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Убираем активный класс у всех вкладок
+            tabs.forEach(t => t.classList.remove('active'));
+            // Добавляем активный класс выбранной вкладке
+            tab.classList.add('active');
+            
+            // Фильтруем по выбранной вкладке
+            const tabType = tab.dataset.tab;
+            filterByTab(tabType);
+        });
+    });
+    
+    updateTabCounts();
+}
+
+// ==============================
+// ФУНКЦИИ РЕНДЕРИНГА
 // ==============================
 
 function getAllGenres() {
@@ -452,17 +467,17 @@ function populateGenreFilter() {
 }
 
 function updateStats() {
-    const totalAnime = animeDatabase.length;
-    const uniqueGenres = getAllGenres().length;
-    const totalEpisodes = animeDatabase.reduce((sum, anime) => sum + (anime.episodes || 0), 0);
+    const totalAnime = currentFilteredAnime.length;
+    const uniqueGenres = new Set();
+    const totalEpisodes = currentFilteredAnime.reduce((sum, anime) => sum + (anime.episodes || 0), 0);
     
-    const totalAnimeEl = document.getElementById('totalAnime');
-    const uniqueGenresEl = document.getElementById('uniqueGenres');
-    const totalEpisodesEl = document.getElementById('totalEpisodes');
+    currentFilteredAnime.forEach(anime => {
+        anime.genres.forEach(genre => uniqueGenres.add(genre));
+    });
     
-    if (totalAnimeEl) totalAnimeEl.textContent = totalAnime;
-    if (uniqueGenresEl) uniqueGenresEl.textContent = uniqueGenres;
-    if (totalEpisodesEl) totalEpisodesEl.textContent = totalEpisodes;
+    document.getElementById('totalAnime').textContent = totalAnime;
+    document.getElementById('uniqueGenres').textContent = uniqueGenres.size;
+    document.getElementById('totalEpisodes').textContent = totalEpisodes;
     
     const now = new Date();
     const lastUpdateEl = document.getElementById('lastUpdate');
@@ -472,13 +487,63 @@ function updateStats() {
     }
 }
 
+function getTypeBadge(type) {
+    const badges = {
+        'tv': 'TV Сериал',
+        'movie': 'Фильм',
+        'ova': 'OVA',
+        'ona': 'ONA',
+        'special': 'Special'
+    };
+    
+    return badges[type] || type;
+}
+
+function getTypeIcon(type) {
+    const icons = {
+        'tv': 'fas fa-tv',
+        'movie': 'fas fa-video',
+        'ova': 'fas fa-compact-disc',
+        'ona': 'fas fa-globe',
+        'special': 'fas fa-star'
+    };
+    
+    return icons[type] || 'fas fa-film';
+}
+
 function createAnimeCard(anime) {
     const card = document.createElement('div');
     card.className = 'anime-card';
     card.dataset.id = anime.id;
+    card.dataset.type = anime.type;
     
     const hasLink = anime.link && anime.link.trim() !== '';
+    const hasImage = anime.image && anime.image.trim() !== '';
     
+    // Превью изображение
+    let previewHTML = '';
+    if (hasImage) {
+        previewHTML = `
+            <div class="anime-preview">
+                <img src="${anime.image}" alt="${anime.title}" class="anime-preview-img">
+                <span class="anime-type-badge">${getTypeBadge(anime.type)}</span>
+            </div>
+        `;
+    } else {
+        previewHTML = `
+            <div class="anime-preview">
+                <div class="preview-placeholder">
+                    <div>
+                        <i class="${getTypeIcon(anime.type)}"></i>
+                        <p>${getTypeBadge(anime.type)}</p>
+                    </div>
+                </div>
+                <span class="anime-type-badge">${getTypeBadge(anime.type)}</span>
+            </div>
+        `;
+    }
+    
+    // Заголовок
     let titleHTML = '';
     if (hasLink) {
         titleHTML = `
@@ -491,6 +556,7 @@ function createAnimeCard(anime) {
     }
     
     card.innerHTML = `
+        ${previewHTML}
         <div class="anime-header">
             ${titleHTML}
             ${anime.originalTitle ? `<p class="original-title">${anime.originalTitle}</p>` : ''}
@@ -512,8 +578,8 @@ function createAnimeCard(anime) {
                     <span class="detail-value">${anime.studio}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">ID</span>
-                    <span class="detail-value">#${anime.id.toString().padStart(3, '0')}</span>
+                    <span class="detail-label">Тип</span>
+                    <span class="detail-value">${getTypeBadge(anime.type)}</span>
                 </div>
             </div>
             
@@ -533,28 +599,28 @@ function createAnimeCard(anime) {
     return card;
 }
 
-function renderAnimeGrid(filteredAnime = animeDatabase) {
+function renderAnimeGrid() {
     const grid = document.getElementById('animeGrid');
     if (!grid) return;
     
     grid.innerHTML = '';
     
-    if (filteredAnime.length === 0) {
+    if (currentFilteredAnime.length === 0) {
         grid.innerHTML = `
             <div class="no-results">
                 <h3><i class="fas fa-search"></i> Ничего не найдено</h3>
-                <p>Попробуйте изменить поисковый запрос или выберите другой жанр</p>
+                <p>Попробуйте изменить поисковый запрос или выберите другую вкладку/жанр</p>
             </div>
         `;
         return;
     }
     
-    filteredAnime.forEach(anime => {
+    currentFilteredAnime.forEach(anime => {
         grid.appendChild(createAnimeCard(anime));
     });
 }
 
-function filterAnime() {
+function applyCurrentFilters() {
     const searchInput = document.getElementById('searchInput');
     const genreFilter = document.getElementById('genreFilter');
     
@@ -563,70 +629,89 @@ function filterAnime() {
     const searchTerm = searchInput.value.toLowerCase();
     const selectedGenre = genreFilter.value;
     
-    const filtered = animeDatabase.filter(anime => {
-        const matchesSearch = 
+    let filtered = animeDatabase;
+    
+    // Фильтр по вкладке
+    if (currentTab !== 'all') {
+        filtered = filtered.filter(anime => anime.type === currentTab);
+    }
+    
+    // Фильтр по поиску
+    if (searchTerm) {
+        filtered = filtered.filter(anime => 
             anime.title.toLowerCase().includes(searchTerm) ||
             (anime.originalTitle && anime.originalTitle.toLowerCase().includes(searchTerm)) ||
-            anime.description.toLowerCase().includes(searchTerm);
-        
-        const matchesGenre = !selectedGenre || anime.genres.includes(selectedGenre);
-        
-        return matchesSearch && matchesGenre;
-    });
+            anime.description.toLowerCase().includes(searchTerm)
+        );
+    }
     
-    renderAnimeGrid(filtered);
+    // Фильтр по жанру
+    if (selectedGenre) {
+        filtered = filtered.filter(anime => anime.genres.includes(selectedGenre));
+    }
     
-    const totalAnimeEl = document.getElementById('totalAnime');
-    if (totalAnimeEl) {
-        totalAnimeEl.textContent = filtered.length;
+    currentFilteredAnime = filtered;
+    renderAnimeGrid();
+    updateStats();
+}
+
+// ==============================
+// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+// ==============================
+
+let backgroundManager = null;
+
+function initApp() {
+    console.log('Инициализация приложения...');
+    
+    // Инициализация менеджера фонов
+    backgroundManager = new BackgroundManager();
+    window.backgroundManager = backgroundManager;
+    
+    // Настройка вкладок
+    setupTabs();
+    
+    // Заполнение фильтров
+    populateGenreFilter();
+    
+    // Первоначальная отрисовка
+    applyCurrentFilters();
+    
+    // Настройка обработчиков событий
+    setupAppEventListeners();
+    
+    console.log('✅ Приложение инициализировано');
+}
+
+function setupAppEventListeners() {
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', () => applyCurrentFilters());
+    }
+    
+    if (genreFilter) {
+        genreFilter.addEventListener('change', () => applyCurrentFilters());
+    }
+    
+    // Кнопка проверки данных
+    const checkDataButton = document.querySelector('.action-button');
+    if (checkDataButton) {
+        checkDataButton.addEventListener('click', validateDatabase);
     }
 }
+
+document.addEventListener('DOMContentLoaded', initApp);
 
 // ==============================
 // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 // ==============================
 
-function exportDatabase() {
-    const dataStr = JSON.stringify(animeDatabase, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `okane-anime-database-${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-}
-
-function importDatabase(jsonData) {
-    try {
-        const newData = JSON.parse(jsonData);
-        if (Array.isArray(newData)) {
-            animeDatabase.length = 0;
-            animeDatabase.push(...newData);
-            
-            populateGenreFilter();
-            updateStats();
-            renderAnimeGrid();
-            
-            console.log('✅ Данные успешно импортированы');
-            return true;
-        }
-    } catch (error) {
-        console.error('❌ Ошибка импорта:', error);
-    }
-    return false;
-}
-
-function getNextId() {
-    return animeDatabase.length > 0 
-        ? Math.max(...animeDatabase.map(item => item.id)) + 1 
-        : 1;
-}
-
 function validateDatabase() {
-    const requiredFields = ['title', 'description', 'year', 'studio'];
+    const requiredFields = ['title', 'description', 'year', 'studio', 'type'];
     const errors = [];
+    const validTypes = ['tv', 'movie', 'ova', 'ona', 'special'];
     
     animeDatabase.forEach((anime, index) => {
         requiredFields.forEach(field => {
@@ -647,11 +732,23 @@ function validateDatabase() {
             errors.push(`Запись #${index + 1}: должен быть хотя бы один актёр озвучки`);
         }
         
+        if (!validTypes.includes(anime.type)) {
+            errors.push(`Запись #${index + 1}: некорректный тип аниме "${anime.type}". Допустимые: tv, movie, ova, ona, special`);
+        }
+        
         if (anime.link && anime.link.trim() !== '') {
             try {
                 new URL(anime.link);
             } catch (e) {
                 errors.push(`Запись #${index + 1}: некорректная ссылка в поле link`);
+            }
+        }
+        
+        if (anime.image && anime.image.trim() !== '') {
+            try {
+                new URL(anime.image);
+            } catch (e) {
+                errors.push(`Запись #${index + 1}: некорректный URL изображения в поле image`);
             }
         }
     });
@@ -667,6 +764,12 @@ function validateDatabase() {
     }
 }
 
+function getNextId() {
+    return animeDatabase.length > 0 
+        ? Math.max(...animeDatabase.map(item => item.id)) + 1 
+        : 1;
+}
+
 function addLinkToAnime(animeId, url) {
     const anime = animeDatabase.find(a => a.id === animeId);
     if (!anime) {
@@ -680,11 +783,33 @@ function addLinkToAnime(animeId, url) {
         }
         
         anime.link = url;
-        renderAnimeGrid();
+        applyCurrentFilters();
         console.log(`✅ Ссылка добавлена к аниме "${anime.title}"`);
         return true;
     } catch (e) {
         console.error(`❌ Некорректная ссылка: ${url}`);
+        return false;
+    }
+}
+
+function addImageToAnime(animeId, imageUrl) {
+    const anime = animeDatabase.find(a => a.id === animeId);
+    if (!anime) {
+        console.error(`Аниме с ID ${animeId} не найдено`);
+        return false;
+    }
+    
+    try {
+        if (imageUrl && imageUrl.trim() !== '') {
+            new URL(imageUrl);
+        }
+        
+        anime.image = imageUrl;
+        applyCurrentFilters();
+        console.log(`✅ Изображение добавлено к аниме "${anime.title}"`);
+        return true;
+    } catch (e) {
+        console.error(`❌ Некорректный URL изображения: ${imageUrl}`);
         return false;
     }
 }
