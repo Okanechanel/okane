@@ -1,5 +1,5 @@
 // ==============================
-// СИСТЕМА УПРАВЛЕНИЯ ФОНОМ (с старыми градиентами)
+// СИСТЕМА УПРАВЛЕНИЯ ФОНОМ
 // ==============================
 
 class BackgroundManager {
@@ -111,7 +111,7 @@ class BackgroundManager {
             }
         });
 
-        // Градиенты (старые варианты)
+        // Градиенты
         document.querySelectorAll('.bg-option[data-bg^="gradient"]').forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -250,8 +250,6 @@ class BackgroundManager {
 
 // ==============================
 // БАЗА ДАННЫХ АНИМЕ
-// Добавлены типы: tv, movie, ova, ona, special
-// Добавлено поле image для превью
 // ==============================
 
 const animeDatabase = [
@@ -265,9 +263,9 @@ const animeDatabase = [
         studio: "Studio Colorido",
         voiceActors: ["Анна Кириллова", "Михаил Светлов", "Елена Громова"],
         genres: ["Приключения", "Фэнтези", "Драма"],
-        type: "tv", // tv, movie, ova, ona, special
+        type: "tv",
         link: "https://shikimori.one/animes",
-        image: "" // URL изображения для превью
+        image: ""
     },
     {
         id: 2,
@@ -425,12 +423,9 @@ function setupTabs() {
     
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            // Убираем активный класс у всех вкладок
             tabs.forEach(t => t.classList.remove('active'));
-            // Добавляем активный класс выбранной вкладке
             tab.classList.add('active');
             
-            // Фильтруем по выбранной вкладке
             const tabType = tab.dataset.tab;
             filterByTab(tabType);
         });
@@ -479,12 +474,13 @@ function updateStats() {
     document.getElementById('uniqueGenres').textContent = uniqueGenres.size;
     document.getElementById('totalEpisodes').textContent = totalEpisodes;
     
-    const now = new Date();
-    const lastUpdateEl = document.getElementById('lastUpdate');
-    if (lastUpdateEl) {
-        lastUpdateEl.textContent = 
-            `${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}`;
-    }
+    // УБРАНО ОБНОВЛЕНИЕ ВРЕМЕНИ:
+    // const now = new Date();
+    // const lastUpdateEl = document.getElementById('lastUpdate');
+    // if (lastUpdateEl) {
+    //     lastUpdateEl.textContent = 
+    //         `${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}`;
+    // }
 }
 
 function getTypeBadge(type) {
@@ -520,7 +516,6 @@ function createAnimeCard(anime) {
     const hasLink = anime.link && anime.link.trim() !== '';
     const hasImage = anime.image && anime.image.trim() !== '';
     
-    // Превью изображение
     let previewHTML = '';
     if (hasImage) {
         previewHTML = `
@@ -543,7 +538,6 @@ function createAnimeCard(anime) {
         `;
     }
     
-    // Заголовок
     let titleHTML = '';
     if (hasLink) {
         titleHTML = `
@@ -631,12 +625,10 @@ function applyCurrentFilters() {
     
     let filtered = animeDatabase;
     
-    // Фильтр по вкладке
     if (currentTab !== 'all') {
         filtered = filtered.filter(anime => anime.type === currentTab);
     }
     
-    // Фильтр по поиску
     if (searchTerm) {
         filtered = filtered.filter(anime => 
             anime.title.toLowerCase().includes(searchTerm) ||
@@ -645,7 +637,6 @@ function applyCurrentFilters() {
         );
     }
     
-    // Фильтр по жанру
     if (selectedGenre) {
         filtered = filtered.filter(anime => anime.genres.includes(selectedGenre));
     }
@@ -664,20 +655,12 @@ let backgroundManager = null;
 function initApp() {
     console.log('Инициализация приложения...');
     
-    // Инициализация менеджера фонов
     backgroundManager = new BackgroundManager();
     window.backgroundManager = backgroundManager;
     
-    // Настройка вкладок
     setupTabs();
-    
-    // Заполнение фильтров
     populateGenreFilter();
-    
-    // Первоначальная отрисовка
     applyCurrentFilters();
-    
-    // Настройка обработчиков событий
     setupAppEventListeners();
     
     console.log('✅ Приложение инициализировано');
@@ -695,7 +678,6 @@ function setupAppEventListeners() {
         genreFilter.addEventListener('change', () => applyCurrentFilters());
     }
     
-    // Кнопка проверки данных
     const checkDataButton = document.querySelector('.action-button');
     if (checkDataButton) {
         checkDataButton.addEventListener('click', validateDatabase);
@@ -814,7 +796,6 @@ function addImageToAnime(animeId, imageUrl) {
     }
 }
 
-// Автоматическая проверка при загрузке
 setTimeout(() => {
     console.log('Проверка целостности данных...');
     validateDatabase();
